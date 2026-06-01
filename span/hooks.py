@@ -12,13 +12,22 @@ app_license = "mit"
 required_apps = ["frappe", "erpnext"]
 
 # ---------------------------------------------------------------------------
-# Per fase ingevuld. Zie span-startdocument.md (repo Span Frappe App workspace).
-#
-# Fase 1: fixtures = [Custom Field, Property Setter, Client Script, ...]
-# Fase 3: doc_events = {"Task": {"validate": "span.api.sync_board_state"}}
-# Fase 6: doc_events["Task"]["on_update"] = "span.api.check_phase_completion"
-# Fase 7: span.billing.create_draft_invoice_for_phase()  (alleen docstatus=0)
+# Fixtures: alles wat een schone site via `migrate` moet reproduceren.
+# Fase 1: de zes Custom Fields op Task (module = PM).
+# Later: Property Setter, Client Script, Report, Workspace, Project Template.
 # ---------------------------------------------------------------------------
+fixtures = [
+	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
+]
 
-# fixtures = []
-# doc_events = {}
+# ---------------------------------------------------------------------------
+# Document-events (app-methode, imports toegestaan; geen Server Script-sandbox).
+# Fase 1: Phase/Epic -> is_group via task_validate.
+# Fase 3 breidt task_validate uit met board-state -> status sync.
+# Fase 6 voegt on_update toe (span.api.check_phase_completion).
+# ---------------------------------------------------------------------------
+doc_events = {
+	"Task": {
+		"validate": "span.api.task_validate",
+	},
+}
