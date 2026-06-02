@@ -1,6 +1,17 @@
 [
  {
   "doctype": "Custom Field",
+  "name": "Task-custom_span_section",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_span_section",
+  "label": "Span",
+  "fieldtype": "Section Break",
+  "insert_after": "status",
+  "collapsible": 0
+ },
+ {
+  "doctype": "Custom Field",
   "name": "Task-custom_work_type",
   "dt": "Task",
   "module": "PM",
@@ -9,9 +20,10 @@
   "fieldtype": "Select",
   "options": "Phase\nEpic\nStory\nTask\nBug",
   "default": "Task",
-  "insert_after": "status",
+  "insert_after": "custom_span_section",
   "in_standard_filter": 1,
   "in_list_view": 1,
+  "allow_in_quick_entry": 1,
   "description": "Type, geen niveau. Phase en Epic worden group-tasks."
  },
  {
@@ -26,6 +38,7 @@
   "default": "Backlog",
   "insert_after": "custom_work_type",
   "in_standard_filter": 1,
+  "allow_in_quick_entry": 1,
   "description": "Stuurt de kanban en synct eenrichtings naar native status."
  },
  {
@@ -38,45 +51,18 @@
   "fieldtype": "Int",
   "insert_after": "custom_board_state",
   "non_negative": 1,
+  "allow_in_quick_entry": 1,
   "description": "Optionele schatting."
  },
  {
   "doctype": "Custom Field",
-  "name": "Task-custom_phase_amount",
+  "name": "Task-custom_span_section_end",
   "dt": "Task",
   "module": "PM",
-  "fieldname": "custom_phase_amount",
-  "label": "Phase Amount",
-  "fieldtype": "Currency",
+  "fieldname": "custom_span_section_end",
+  "label": "",
+  "fieldtype": "Section Break",
   "insert_after": "custom_story_points",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "description": "Vast fasebedrag, afkomstig uit het Project Template. Alleen op Phase-taken."
- },
- {
-  "doctype": "Custom Field",
-  "name": "Task-custom_so_item",
-  "dt": "Task",
-  "module": "PM",
-  "fieldname": "custom_so_item",
-  "label": "Sales Order Item",
-  "fieldtype": "Data",
-  "insert_after": "custom_phase_amount",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "read_only": 1,
-  "description": "Verwijzing (so_detail) naar de Sales Order-regel van deze fase."
- },
- {
-  "doctype": "Custom Field",
-  "name": "Task-custom_invoiced",
-  "dt": "Task",
-  "module": "PM",
-  "fieldname": "custom_invoiced",
-  "label": "Invoiced",
-  "fieldtype": "Check",
-  "default": "0",
-  "insert_after": "custom_so_item",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "read_only": 1,
-  "description": "Voorkomt dubbel factureren van een fase. Gezet door de facturatie-logica (Fase 7)."
+  "collapsible": 0
  }
 ]
