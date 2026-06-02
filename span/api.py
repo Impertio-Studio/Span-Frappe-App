@@ -5,9 +5,10 @@ in tegenstelling tot Server Scripts.
 """
 
 import frappe
+from frappe import _
 
 # Werktypes die altijd een group-task (NestedSet-ouder) zijn.
-GROUP_WORK_TYPES = {"Phase", "Epic"}
+GROUP_WORK_TYPES = {"Phase", "Step", "Epic"}
 
 # Eenrichtings mapping: het bord (custom_board_state) stuurt de native status.
 # Overdue en Template staan hier bewust NIET in: Overdue beheert ERPNext zelf
@@ -30,9 +31,43 @@ def task_validate(doc, method=None):
 
 	Fase 1: Phase/Epic worden group-tasks.
 	Fase 3: board-state -> native status (eenrichting).
+	Structuur: Phase onder Project, Step onder Phase.
 	"""
 	enforce_group_for_work_type(doc)
+	enforce_structure_rules(doc)
 	sync_board_state_to_status(doc)
+
+
+def enforce_structure_rules(doc):
+	"""Twee bewuste structuurregels (verder is nesten vrij):
+
+	- Een Phase hangt ALTIJD onder een Project (project-veld verplicht).
+	- Een Step hangt ALTIJD onder een Phase (Phase als voorouder).
+
+	Taken/Epics/Stories/Bugs mogen op elk niveau (Project/Phase/Step) los.
+	"""
+	work_type = doc.get("custom_work_type")
+	if work_type == "Phase" and not doc.get("project"):
+		frappe.throw(_("Een Phase moet onder een Project vallen: kies een Project."))
+	if work_type == "Step" and not _has_phase_ancestor(doc):
+		frappe.throw(_("Een Step moet onder een Phase vallen."))
+
+
+def _has_phase_ancestor(doc):
+	"""Loop de parent_task-keten omhoog tot een Phase of de top."""
+	parent = doc.get("parent_task")
+	seen = set()
+	while parent and parent not in seen:
+		seen.add(parent)
+		row = frappe.db.get_value(
+			"Task", parent, ["custom_work_type", "parent_task"], as_dict=True
+		)
+		if not row:
+			break
+		if row.custom_work_type == "Phase":
+			return True
+		parent = row.parent_task
+	return False
 
 
 def sync_board_state_to_status(doc):
