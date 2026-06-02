@@ -14,11 +14,16 @@ required_apps = ["frappe", "erpnext"]
 # ---------------------------------------------------------------------------
 # Fixtures: alles wat een schone site via `migrate` moet reproduceren.
 # Fase 1: de zes Custom Fields op Task (module = PM).
+# Fase 2: Kanban Board "Span Board" (Task op custom_board_state).
 # Later: Property Setter, Client Script, Report, Workspace, Project Template.
 # ---------------------------------------------------------------------------
 fixtures = [
 	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
+	{"dt": "Kanban Board", "filters": [["name", "in", ["Span Board"]]]},
 ]
+
+# Task list view: board-state-gekleurde indicatoren (Fase 2).
+doctype_list_js = {"Task": "public/js/task_list.js"}
 
 # ---------------------------------------------------------------------------
 # Document-events (app-methode, imports toegestaan; geen Server Script-sandbox).
