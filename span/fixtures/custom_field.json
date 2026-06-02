@@ -39,44 +39,5 @@
   "insert_after": "custom_board_state",
   "non_negative": 1,
   "description": "Optionele schatting."
- },
- {
-  "doctype": "Custom Field",
-  "name": "Task-custom_phase_amount",
-  "dt": "Task",
-  "module": "PM",
-  "fieldname": "custom_phase_amount",
-  "label": "Phase Amount",
-  "fieldtype": "Currency",
-  "insert_after": "custom_story_points",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "description": "Vast fasebedrag, afkomstig uit het Project Template. Alleen op Phase-taken."
- },
- {
-  "doctype": "Custom Field",
-  "name": "Task-custom_so_item",
-  "dt": "Task",
-  "module": "PM",
-  "fieldname": "custom_so_item",
-  "label": "Sales Order Item",
-  "fieldtype": "Data",
-  "insert_after": "custom_phase_amount",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "read_only": 1,
-  "description": "Verwijzing (so_detail) naar de Sales Order-regel van deze fase."
- },
- {
-  "doctype": "Custom Field",
-  "name": "Task-custom_invoiced",
-  "dt": "Task",
-  "module": "PM",
-  "fieldname": "custom_invoiced",
-  "label": "Invoiced",
-  "fieldtype": "Check",
-  "default": "0",
-  "insert_after": "custom_so_item",
-  "depends_on": "eval:doc.custom_work_type==\"Phase\"",
-  "read_only": 1,
-  "description": "Voorkomt dubbel factureren van een fase. Gezet door de facturatie-logica (Fase 7)."
  }
 ]
