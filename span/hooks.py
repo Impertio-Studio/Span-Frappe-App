@@ -11,6 +11,16 @@ app_license = "mit"
 # Span bouwt voort op ERPNext (Task, Project, Sales Order, Sales Invoice).
 required_apps = ["frappe", "erpnext"]
 
+# Span als app-tegel in de Desk apps-launcher (/apps) -> opent de Span PM-workspace.
+add_to_apps_screen = [
+	{
+		"name": "span",
+		"logo": "/assets/span/images/span-logo.svg",
+		"title": "Span",
+		"route": "/app/span-pm",
+	}
+]
+
 # ---------------------------------------------------------------------------
 # Fixtures: alles wat een schone site via `migrate` moet reproduceren.
 # Fase 1: 3 Custom Fields op Task (work_type, board_state, story_points).
