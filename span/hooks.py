@@ -13,13 +13,15 @@ required_apps = ["frappe", "erpnext"]
 
 # ---------------------------------------------------------------------------
 # Fixtures: alles wat een schone site via `migrate` moet reproduceren.
-# Fase 1: de zes Custom Fields op Task (module = PM).
+# Fase 1: 3 Custom Fields op Task (work_type, board_state, story_points).
 # Fase 2: Kanban Board "Span Board" (Task op custom_board_state).
-# Later: Property Setter, Client Script, Report, Workspace, Project Template.
+# Fase 5: Workspace "Span PM" (bundelt board, overview-report, taken).
+# (Het Span Overview-report synct als standard report uit pm/report/.)
 # ---------------------------------------------------------------------------
 fixtures = [
 	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
 	{"dt": "Kanban Board", "filters": [["name", "in", ["Span Board"]]]},
+	{"dt": "Workspace", "filters": [["name", "in", ["Span PM"]]]},
 ]
 
 # Task list view: board-state-gekleurde indicatoren (Fase 2).
