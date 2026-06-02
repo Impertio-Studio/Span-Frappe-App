@@ -8,7 +8,7 @@ geen budget/facturatie.
 import frappe
 from frappe import _
 
-GROUP_TYPES = ("Phase", "Epic")
+GROUP_TYPES = ("Phase", "Step", "Epic")
 
 
 def execute(filters=None):
