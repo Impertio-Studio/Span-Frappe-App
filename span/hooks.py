@@ -22,8 +22,10 @@ fixtures = [
 	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
 	{"dt": "Property Setter", "filters": [["module", "=", "PM"]]},
 	{"dt": "Kanban Board", "filters": [["name", "in", ["Span Board"]]]},
-	{"dt": "Workspace", "filters": [["name", "in", ["Span PM"]]]},
 ]
+# Workspace "Span PM" komt uit de module-map pm/workspace/span_pm/ (standaard
+# workspace), NIET via fixtures: Frappe verwijdert publieke fixture-workspaces
+# als "orphan" tijdens migrate.
 
 # Task list view: board-state-gekleurde indicatoren (Fase 2).
 doctype_list_js = {"Task": "public/js/task_list.js"}

@@ -1,0 +1,43 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"h1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Span PM</b></span>\",\"col\":12}},{\"id\":\"s1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Span Board\",\"col\":4}},{\"id\":\"s2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Span Overview\",\"col\":4}},{\"id\":\"s3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tasks\",\"col\":4}}]",
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "project",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Span PM",
+ "links": [],
+ "module": "PM",
+ "name": "Span PM",
+ "number_cards": [],
+ "public": 1,
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Orange",
+   "doc_view": "",
+   "label": "Span Board",
+   "type": "URL",
+   "url": "/app/task/view/kanban/Span Board"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "Report",
+   "label": "Span Overview",
+   "link_to": "Span Overview",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "label": "Tasks",
+   "link_to": "Task",
+   "type": "DocType"
+  }
+ ],
+ "title": "Span PM",
+ "type": "Workspace"
+}
