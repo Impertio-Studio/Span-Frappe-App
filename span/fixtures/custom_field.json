@@ -1,6 +1,17 @@
 [
  {
   "doctype": "Custom Field",
+  "name": "Task-custom_span_section",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_span_section",
+  "label": "Span",
+  "fieldtype": "Section Break",
+  "insert_after": "status",
+  "collapsible": 0
+ },
+ {
+  "doctype": "Custom Field",
   "name": "Task-custom_work_type",
   "dt": "Task",
   "module": "PM",
@@ -9,9 +20,10 @@
   "fieldtype": "Select",
   "options": "Phase\nEpic\nStory\nTask\nBug",
   "default": "Task",
-  "insert_after": "status",
+  "insert_after": "custom_span_section",
   "in_standard_filter": 1,
   "in_list_view": 1,
+  "allow_in_quick_entry": 1,
   "description": "Type, geen niveau. Phase en Epic worden group-tasks."
  },
  {
@@ -26,6 +38,7 @@
   "default": "Backlog",
   "insert_after": "custom_work_type",
   "in_standard_filter": 1,
+  "allow_in_quick_entry": 1,
   "description": "Stuurt de kanban en synct eenrichtings naar native status."
  },
  {
@@ -38,6 +51,18 @@
   "fieldtype": "Int",
   "insert_after": "custom_board_state",
   "non_negative": 1,
+  "allow_in_quick_entry": 1,
   "description": "Optionele schatting."
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Task-custom_span_section_end",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_span_section_end",
+  "label": "",
+  "fieldtype": "Section Break",
+  "insert_after": "custom_story_points",
+  "collapsible": 0
  }
 ]

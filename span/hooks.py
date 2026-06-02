@@ -20,6 +20,7 @@ required_apps = ["frappe", "erpnext"]
 # ---------------------------------------------------------------------------
 fixtures = [
 	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
+	{"dt": "Property Setter", "filters": [["module", "=", "PM"]]},
 	{"dt": "Kanban Board", "filters": [["name", "in", ["Span Board"]]]},
 	{"dt": "Workspace", "filters": [["name", "in", ["Span PM"]]]},
 ]

@@ -1,0 +1,24 @@
+[
+ {
+  "doctype": "Property Setter",
+  "name": "Task-parent_task-allow_in_quick_entry",
+  "doctype_or_field": "DocField",
+  "doc_type": "Task",
+  "field_name": "parent_task",
+  "property": "allow_in_quick_entry",
+  "property_type": "Check",
+  "value": "1",
+  "module": "PM"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Task-project-allow_in_quick_entry",
+  "doctype_or_field": "DocField",
+  "doc_type": "Task",
+  "field_name": "project",
+  "property": "allow_in_quick_entry",
+  "property_type": "Check",
+  "value": "1",
+  "module": "PM"
+ }
+]
