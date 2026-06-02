@@ -12,7 +12,6 @@
   "insert_after": "status",
   "in_standard_filter": 1,
   "in_list_view": 1,
-  "reqd": 1,
   "description": "Type, geen niveau. Phase en Epic worden group-tasks."
  },
  {
