@@ -56,13 +56,55 @@
  },
  {
   "doctype": "Custom Field",
+  "name": "Task-custom_discipline",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_discipline",
+  "label": "Discipline",
+  "fieldtype": "Table MultiSelect",
+  "options": "Span Task Discipline",
+  "insert_after": "custom_story_points",
+  "in_standard_filter": 1,
+  "allow_in_quick_entry": 1,
+  "description": "Cross-cutting disciplines (Frontend, Backend, ...). Meerdere toegestaan."
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Task-custom_phase",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_phase",
+  "label": "Phase (auto)",
+  "fieldtype": "Link",
+  "options": "Task",
+  "insert_after": "custom_discipline",
+  "read_only": 1,
+  "in_standard_filter": 1,
+  "description": "Dichtstbijzijnde Phase-voorouder. Automatisch gevuld; voor plat filteren op fase + alle children."
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Task-custom_epic",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_epic",
+  "label": "Epic (auto)",
+  "fieldtype": "Link",
+  "options": "Task",
+  "insert_after": "custom_phase",
+  "read_only": 1,
+  "in_standard_filter": 1,
+  "description": "Dichtstbijzijnde Epic-voorouder. Automatisch gevuld; voor plat filteren op epic + bijbehorende stories."
+ },
+ {
+  "doctype": "Custom Field",
   "name": "Task-custom_span_section_end",
   "dt": "Task",
   "module": "PM",
   "fieldname": "custom_span_section_end",
   "label": "",
   "fieldtype": "Section Break",
-  "insert_after": "custom_story_points",
+  "insert_after": "custom_epic",
   "collapsible": 0
  }
 ]

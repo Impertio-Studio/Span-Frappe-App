@@ -1,0 +1,12 @@
+[
+ { "doctype": "Span Discipline", "name": "Frontend", "discipline_name": "Frontend", "color": "#ff6b00" },
+ { "doctype": "Span Discipline", "name": "Backend", "discipline_name": "Backend", "color": "#00ff88" },
+ { "doctype": "Span Discipline", "name": "UI/UX", "discipline_name": "UI/UX", "color": "#ffaa00" },
+ { "doctype": "Span Discipline", "name": "DevOps", "discipline_name": "DevOps", "color": "#17a2b8" },
+ { "doctype": "Span Discipline", "name": "Commercial", "discipline_name": "Commercial", "color": "#ffc107" },
+ { "doctype": "Span Discipline", "name": "Project Management", "discipline_name": "Project Management", "color": "#888888" },
+ { "doctype": "Span Discipline", "name": "QA", "discipline_name": "QA", "color": "#dc3545" },
+ { "doctype": "Span Discipline", "name": "Data", "discipline_name": "Data", "color": "#6f42c1" },
+ { "doctype": "Span Discipline", "name": "Infra", "discipline_name": "Infra", "color": "#20c997" },
+ { "doctype": "Span Discipline", "name": "Documentation", "discipline_name": "Documentation", "color": "#0d6efd" }
+]
