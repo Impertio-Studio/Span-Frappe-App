@@ -7,7 +7,8 @@
   "field_name": "custom_board_state",
   "private": 0,
   "show_labels": 1,
-  "filters": "[]",
+  "filters": "[[\"Task\",\"is_group\",\"=\",0]]",
+  "fields": "[\"custom_work_type\",\"custom_story_points\"]",
   "columns": [
    { "column_name": "Backlog", "indicator": "Gray", "status": "Active" },
    { "column_name": "Todo", "indicator": "Light Blue", "status": "Active" },

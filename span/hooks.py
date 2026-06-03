@@ -31,6 +31,7 @@ add_to_apps_screen = [
 fixtures = [
 	{"dt": "Custom Field", "filters": [["module", "=", "PM"]]},
 	{"dt": "Property Setter", "filters": [["module", "=", "PM"]]},
+	{"dt": "Span Discipline"},
 	{"dt": "Kanban Board", "filters": [["name", "in", ["Span Board"]]]},
 ]
 # Workspace "Span PM" komt uit de module-map pm/workspace/span_pm/ (standaard

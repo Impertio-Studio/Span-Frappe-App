@@ -35,7 +35,32 @@ def task_validate(doc, method=None):
 	"""
 	enforce_group_for_work_type(doc)
 	enforce_structure_rules(doc)
+	set_span_ancestors(doc)
 	sync_board_state_to_status(doc)
+
+
+def set_span_ancestors(doc):
+	"""Vul custom_phase en custom_epic met de dichtstbijzijnde Phase- resp.
+	Epic-voorouder. Maakt plat filteren mogelijk: 'alle werk onder Phase X'
+	of 'Epic + bijbehorende stories', zonder de tree.
+	"""
+	phase = epic = None
+	parent = doc.get("parent_task")
+	seen = set()
+	while parent and parent not in seen:
+		seen.add(parent)
+		row = frappe.db.get_value(
+			"Task", parent, ["custom_work_type", "parent_task"], as_dict=True
+		)
+		if not row:
+			break
+		if row.custom_work_type == "Phase" and not phase:
+			phase = parent
+		if row.custom_work_type == "Epic" and not epic:
+			epic = parent
+		parent = row.parent_task
+	doc.custom_phase = phase
+	doc.custom_epic = epic
 
 
 def enforce_structure_rules(doc):
