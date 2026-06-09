@@ -6,9 +6,17 @@ tags
 node_modules
 __pycache__
 *.csv
+!span/translations/*.csv
 *.log
 .idea/
 .vscode/
 dist/
 build/
 span/docs/current
+
+# Privé, nooit committen
+PROMPTS.md
+SKILLS_LOG.md
+CLAUDE.local.md
+.env
+.env.local

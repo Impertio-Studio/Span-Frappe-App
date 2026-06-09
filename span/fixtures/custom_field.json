@@ -98,13 +98,40 @@
  },
  {
   "doctype": "Custom Field",
+  "name": "Task-custom_package",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_package",
+  "label": "Package",
+  "fieldtype": "Select",
+  "options": "\nBasis\nPlus\nPremium\nFuture",
+  "insert_after": "custom_epic",
+  "in_standard_filter": 1,
+  "allow_in_quick_entry": 1,
+  "description": "Pakket per epic/story, afgeleid uit de MoSCoW-prioriteit van de gekoppelde Requirement (fase 2). Houdt de scope-reden vast."
+ },
+ {
+  "doctype": "Custom Field",
   "name": "Task-custom_span_section_end",
   "dt": "Task",
   "module": "PM",
   "fieldname": "custom_span_section_end",
   "label": "",
   "fieldtype": "Section Break",
-  "insert_after": "custom_epic",
+  "insert_after": "custom_package",
   "collapsible": 0
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Project-custom_tier",
+  "dt": "Project",
+  "module": "PM",
+  "fieldname": "custom_tier",
+  "label": "Tier",
+  "fieldtype": "Select",
+  "options": "\nBasis\nPlus\nPremium",
+  "insert_after": "status",
+  "in_standard_filter": 1,
+  "description": "Pakket gekozen bij het Beslismoment (na Doorgronden). Triggert de tier-cancel-logica (fase 2)."
  }
 ]
