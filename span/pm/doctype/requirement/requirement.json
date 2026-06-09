@@ -1,0 +1,169 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-06-09 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_section",
+  "requirement_id",
+  "type",
+  "title",
+  "column_break_meta",
+  "priority",
+  "status",
+  "project",
+  "specification_section",
+  "description",
+  "acceptance_criterion",
+  "source_section",
+  "source_type",
+  "source_document",
+  "source"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "requirement_id",
+   "fieldtype": "Data",
+   "label": "Requirement ID",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Auto: F-01 (Functional) / NFR-01 (Non-Functional), per project."
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Functional\nNon-Functional",
+   "default": "Functional",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_meta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority (MoSCoW)",
+   "options": "Must\nShould\nCould\nWon't",
+   "default": "Must",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Stuurt tier/scope: Must=Basis, Should=Plus, Could=Premium, Won't=Future."
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nAgreed\nBuilt\nTested\nAccepted",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Automatisch afgeleid uit gelinkte stories/tests (fase 2), met handmatige override."
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "specification_section",
+   "fieldtype": "Section Break",
+   "label": "Specificatie"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "acceptance_criterion",
+   "fieldtype": "Small Text",
+   "label": "Acceptance Criterion",
+   "description": "De Definition of Done van de eis."
+  },
+  {
+   "fieldname": "source_section",
+   "fieldtype": "Section Break",
+   "label": "Herkomst"
+  },
+  {
+   "fieldname": "source_type",
+   "fieldtype": "Select",
+   "label": "Source Type",
+   "options": "Pain Point\nProcess\nSystem\nData\nRole\nRisk\nWish\nTechnical",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "source_document",
+   "fieldtype": "Data",
+   "label": "Source Document",
+   "description": "Verwijzing naar het brondocument."
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Pain Point",
+   "options": "Pain Point",
+   "depends_on": "eval:doc.source_type=='Pain Point'",
+   "description": "De concrete pain-point-bron (indien source_type = Pain Point)."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "module": "PM",
+ "name": "Requirement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Projects User"
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}
