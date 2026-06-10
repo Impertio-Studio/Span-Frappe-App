@@ -116,13 +116,13 @@
   "dt": "Task",
   "module": "PM",
   "fieldname": "custom_meerwerk_status",
-  "label": "Meerwerk Status",
+  "label": "Scope Status",
   "fieldtype": "Select",
-  "options": "\nTe beoordelen\nGoedgekeurd\nFuture project",
+  "options": "\nTo Review\nApproved\nFuture Project",
   "insert_after": "custom_package",
   "in_standard_filter": 1,
   "read_only": 1,
-  "description": "Scope-bewaking (fase 2): nieuw Epic/Story op een Go-project zonder link naar een geaccepteerde eis wordt automatisch 'Te beoordelen'. Een Projects Manager keurt goed of zet op 'Future project'."
+  "description": "Scope-bewaking (fase 2): een nieuw Epic/Story op een Go-project zonder link naar een geaccepteerde eis wordt automatisch 'To Review'. Een Projects Manager keurt goed (Approved) of parkeert als Future Project."
  },
  {
   "doctype": "Custom Field",

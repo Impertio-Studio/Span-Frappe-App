@@ -170,7 +170,7 @@ def flag_meerwerk(doc):
 	if decision != "Go":
 		return  # scope-bewaking pas relevant na akkoord
 	if not _has_accepted_requirement_link(doc):
-		doc.custom_meerwerk_status = "Te beoordelen"
+		doc.custom_meerwerk_status = "To Review"
 
 
 def _has_accepted_requirement_link(doc):
