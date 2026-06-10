@@ -451,19 +451,36 @@ TIER_RANK = {"Basis": 1, "Plus": 2, "Premium": 3, "Future": 4}
 
 def project_tier_changed(doc, method=None):
 	"""doc_event op Project (on_update): bij een gewijzigde tier het werk boven
-	de tier annuleren. Alleen draaien als de tier daadwerkelijk veranderde."""
+	de tier annuleren. Alleen draaien als de tier daadwerkelijk veranderde.
+
+	De annulering draait als achtergrondjob (frappe.enqueue): bij een groot
+	project zijn het veel echte Task-saves (validate + NestedSet + Version), te
+	zwaar om synchroon in deze request-transactie te doen. enqueue_after_commit
+	zorgt dat de job pas start nadat deze Project-save gecommit is.
+	"""
 	before = doc.get_doc_before_save()
 	new_tier = doc.get("custom_tier")
 	if not new_tier:
 		return
 	if before and before.get("custom_tier") == new_tier:
 		return
-	cancel_work_above_tier(doc.name, new_tier)
+	frappe.enqueue(
+		"span.api.cancel_work_above_tier",
+		queue="long",
+		enqueue_after_commit=True,
+		project=doc.name,
+		tier=new_tier,
+		notify_user=frappe.session.user,
+	)
 
 
-def cancel_work_above_tier(project, tier):
+def cancel_work_above_tier(project, tier, notify_user=None):
 	"""Annuleer alle (niet-group) taken van het project waarvan custom_package
-	boven de gekozen tier ligt. Version-gelogd via doc.save()."""
+	boven de gekozen tier ligt. Version-gelogd via doc.save().
+
+	Bedoeld als achtergrondjob (zie project_tier_changed). Meldt het resultaat
+	realtime aan notify_user; msgprint zou een job-context niet bereiken.
+	"""
 	rank = TIER_RANK.get(tier)
 	if not rank:
 		return 0
@@ -486,9 +503,17 @@ def cancel_work_above_tier(project, tier):
 		task.custom_board_state = "Canceled"
 		task.save(ignore_permissions=True)
 		cancelled += 1
-	if cancelled:
-		frappe.msgprint(
-			_("{0} taak(en) buiten de tier {1} zijn geannuleerd.").format(cancelled, tier)
+	if cancelled and notify_user:
+		frappe.publish_realtime(
+			"msgprint",
+			{
+				"message": _("{0} taak(en) buiten de tier {1} zijn geannuleerd.").format(
+					cancelled, tier
+				),
+				"title": _("Span"),
+				"indicator": "orange",
+			},
+			user=notify_user,
 		)
 	return cancelled
 
