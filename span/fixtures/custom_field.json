@@ -22,6 +22,7 @@
   "default": "Task",
   "insert_after": "custom_span_section",
   "in_standard_filter": 1,
+  "search_index": 1,
   "in_list_view": 1,
   "allow_in_quick_entry": 1,
   "description": "Type, geen niveau. Phase en Epic worden group-tasks."
@@ -38,6 +39,7 @@
   "default": "Backlog",
   "insert_after": "custom_work_type",
   "in_standard_filter": 1,
+  "search_index": 1,
   "allow_in_quick_entry": 1,
   "description": "Stuurt de kanban en synct eenrichtings naar native status."
  },
@@ -107,6 +109,7 @@
   "options": "\nBasis\nPlus\nPremium\nFuture",
   "insert_after": "custom_epic",
   "in_standard_filter": 1,
+  "search_index": 1,
   "allow_in_quick_entry": 1,
   "description": "Pakket per epic/story, afgeleid uit de MoSCoW-prioriteit van de gekoppelde Requirement (fase 2). Houdt de scope-reden vast."
  },
@@ -121,8 +124,7 @@
   "options": "\nTo Review\nApproved\nFuture Project",
   "insert_after": "custom_package",
   "in_standard_filter": 1,
-  "read_only": 1,
-  "description": "Scope-bewaking (fase 2): een nieuw Epic/Story op een Go-project zonder link naar een geaccepteerde eis wordt automatisch 'To Review'. Een Projects Manager keurt goed (Approved) of parkeert als Future Project."
+  "description": "Scope-bewaking (fase 2): een nieuw Epic/Story op een Go-project zonder link naar een geaccepteerde eis wordt automatisch 'To Review' (server-side). Een Projects Manager keurt goed (Approved) of parkeert als Future Project. Niet read_only zodat die beoordeling mogelijk is; PM-only afdwingen via permlevel is een latere verfijning."
  },
  {
   "doctype": "Custom Field",

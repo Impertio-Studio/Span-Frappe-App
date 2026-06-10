@@ -286,7 +286,7 @@ def _load_span_skelet():
 		return json.load(f)
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def rollout_span_structure(project):
 	"""Rol het standaard Span-skelet uit op een Project.
 
@@ -360,22 +360,31 @@ def rollout_span_structure(project):
 # Getriggerd vanuit Requirement Link-events en Task on_update.
 # ---------------------------------------------------------------------------
 
-def _task_is_done(task_name):
-	state = frappe.db.get_value(
-		"Task", task_name, ["custom_board_state", "status"], as_dict=True
-	)
-	if not state:
-		return False
-	return state.custom_board_state in DONE_BOARD_STATES or (
-		not state.custom_board_state and state.status in ("Completed", "Cancelled")
-	)
+def _build_done_map(task_names):
+	"""Eén query: map elke taaknaam op done-ja/nee (board Done/Canceled, of
+	als board leeg is status Completed/Cancelled). Vermijdt N+1."""
+	done = {}
+	names = list({t for t in task_names if t})
+	if not names:
+		return done
+	for t in frappe.get_all(
+		"Task",
+		filters={"name": ["in", names]},
+		fields=["name", "custom_board_state", "status"],
+	):
+		done[t.name] = t.custom_board_state in DONE_BOARD_STATES or (
+			not t.custom_board_state and t.status in ("Completed", "Cancelled")
+		)
+	return done
 
 
 def derive_requirement_status(requirement):
 	"""Herbereken en schrijf de afgeleide status van een eis (idempotent).
 
 	Respecteert het handmatige eindbesluit Accepted: een eis die op Accepted
-	staat blijft staan. Schrijft via db_set zonder de eis opnieuw te valideren.
+	staat blijft staan. Schrijft via set_value zonder de eis opnieuw te
+	valideren en zonder modified te bumpen (geen form-conflict bij open eis;
+	afgeleide statussen worden bewust niet Version-gelogd).
 	"""
 	current = frappe.db.get_value("Requirement", requirement, "status")
 	if current == "Accepted":
@@ -389,25 +398,30 @@ def derive_requirement_status(requirement):
 	implementers = [l.work_item for l in links if l.relation_type == "implements" and l.work_item]
 	verifiers = [l.work_item for l in links if l.relation_type == "verifies" and l.work_item]
 
+	done = _build_done_map(implementers + verifiers)
+
 	if not implementers:
 		# Geen implements-links: een handmatig opgehoogde Agreed blijft staan,
 		# anders Draft. Built/Tested zonder implementers kan niet bestaan.
 		new_status = "Agreed" if current == "Agreed" else "Draft"
-	elif not all(_task_is_done(t) for t in implementers):
+	elif not all(done.get(t) for t in implementers):
 		new_status = "Agreed"
-	elif verifiers and all(_task_is_done(t) for t in verifiers):
+	elif verifiers and all(done.get(t) for t in verifiers):
 		new_status = "Tested"
 	else:
 		new_status = "Built"
 
 	if new_status != current:
-		frappe.db.set_value("Requirement", requirement, "status", new_status, update_modified=True)
+		frappe.db.set_value(
+			"Requirement", requirement, "status", new_status, update_modified=False
+		)
 	return new_status
 
 
 def requirement_link_changed(doc, method=None):
-	"""doc_event op Requirement Link (after_insert / on_update / on_trash):
-	herbereken de status van de betrokken eis."""
+	"""doc_event op Requirement Link (on_update / after_delete): herbereken de
+	status van de betrokken eis. after_delete (niet on_trash) zodat de query de
+	zojuist verwijderde link niet meer meetelt."""
 	if doc.get("requirement"):
 		derive_requirement_status(doc.requirement)
 
@@ -495,7 +509,14 @@ def get_scope_data(project):
 
 	Geeft het project, de Requirement Sources (bronnen), de eisen gegroepeerd
 	per MoSCoW, en de dekking (eisen zonder implements-link = scope-gaten).
+
+	Toegangscontrole: deze method draait als Jinja-context (niet whitelisted),
+	maar gebruikt frappe.get_all dat permissies omzeilt. Daarom een expliciete
+	read-check op het Project, zodat de scope-data niet lekt aan iemand zonder
+	leesrecht (ook niet via een eigen Print Format op een ander project).
 	"""
+	if not frappe.has_permission("Project", "read", project):
+		frappe.throw(_("Niet toegestaan."), frappe.PermissionError)
 	proj = frappe.db.get_value(
 		"Project",
 		project,
