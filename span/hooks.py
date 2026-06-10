@@ -65,9 +65,8 @@ doc_events = {
 		"on_update": "span.api.roll_requirements_for_task",
 	},
 	"Requirement Link": {
-		"after_insert": "span.api.requirement_link_changed",
 		"on_update": "span.api.requirement_link_changed",
-		"on_trash": "span.api.requirement_link_changed",
+		"after_delete": "span.api.requirement_link_changed",
 	},
 	"Project": {
 		"on_update": "span.api.project_tier_changed",
