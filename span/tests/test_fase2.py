@@ -175,16 +175,20 @@ class TestSpanRequirementRoll(IntegrationTestCase):
 
 class TestSpanTierCancel(IntegrationTestCase):
 	def test_work_above_tier_cancelled(self):
+		# De tier-cancel draait via project_tier_changed als achtergrondjob
+		# (frappe.enqueue, enqueue_after_commit). In een test wordt niet
+		# gecommit, dus toetsen we de jobfunctie cancel_work_above_tier direct.
+		from span.api import cancel_work_above_tier
+
 		project = _project("_Test Span Tier")
 		premium = _task("_Test Premium Work", project=project.name,
 		                custom_package="Premium", custom_board_state="Todo")
 		basis = _task("_Test Basis Work", project=project.name,
 		              custom_package="Basis", custom_board_state="Todo")
 
-		project.reload()
-		project.custom_tier = "Basis"
-		project.save(ignore_permissions=True)
+		cancelled = cancel_work_above_tier(project.name, "Basis")
 
+		self.assertEqual(cancelled, 1)
 		self.assertEqual(
 			frappe.db.get_value("Task", premium.name, "custom_board_state"), "Canceled"
 		)
