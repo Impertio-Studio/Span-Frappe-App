@@ -1,0 +1,518 @@
+[
+ {
+  "depth": 0,
+  "type": "fase",
+  "name": "Fase 1 - Doorgronden",
+  "desc": "Analyse, scope, globale architectuur en vaste prijs. Eindigt met Beslismoment en Kick-off."
+ },
+ {
+  "depth": 1,
+  "type": "taak",
+  "name": "Intake-bezoek uitvoeren",
+  "desc": "Intakegesprek op locatie. Opname/transcript en aangeleverde input als bijlage, daarna condenseren tot bruikbare input."
+ },
+ {
+  "depth": 1,
+  "type": "taak",
+  "name": "Lead-epics/stories QA'en",
+  "desc": "Vooraf door de lead aangemaakte epics/stories nalopen op kwaliteit en volledigheid voordat ze de analyse in gaan."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 1 - Analyserapport",
+  "desc": "Deliverable Analyserapport plus de voedende analyse-handelingen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Afdelingsinterviews houden",
+  "desc": "Gesprekken per afdeling om processen en behoeften op te halen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Werkvloer-observatie uitvoeren",
+  "desc": "Meekijken op de werkvloer om het feitelijke werk te zien."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Systeem- en licentie-inventarisatie (IT-landschap + jaarkosten)",
+  "desc": "Systemen en abonnementen in kaart, globaal jaarbedrag, dure/dubbele abonnementen signaleren. Geen volledige TCO-analyse."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Data-export + kwaliteitsanalyse",
+  "desc": "Bestaande data exporteren en beoordelen op volledigheid, duplicaten en vervuiling."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Analyserapport opstellen",
+  "desc": "Bullets: huidige situatie, knelpunten, IT-landschap + jaarkosten, databevindingen. DoD: iteratief bijgewerkt tot klant-herkenbaar."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 2 - Scope-document",
+  "desc": "Deliverable Scope-document plus prioritering en aanmaak in Span."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "MoSCoW-prioriteringssessie met klant",
+  "desc": "Sessie met de klant om de functionele eisen te prioriteren (Must/Should/Could/Won't)."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Scope-document (functionele eisen) opstellen",
+  "desc": "Bullets: functionele eisen, scope-grenzen (in/out), MoSCoW-uitkomst. DoD: iteratief bijgewerkt tot klant-herkenbaar."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Requirements + epics/stories in Span aanmaken",
+  "desc": "Uit het scope-document Requirements en bijbehorende epics/stories aanmaken, met Requirement Link."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Dekking sluiten (dekkings-rapport)",
+  "desc": "Controleren dat alle functionele eisen door epics/stories gedekt zijn. Dekkings-rapport opleveren."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 3 - Globale architectuurschets",
+  "desc": "Deliverable Globale architectuurschets plus technische validatie."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Globale architectuurschets opstellen",
+  "desc": "Bullets: systeemlandschap, koppelingen, hosting-richting. ADR/ontwerpbeslissingen horen in TOD-sectie 14, niet hier."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Technische koppelbaarheidscheck + hosting-validatie",
+  "desc": "Verifieren of systemen koppelbaar zijn (API's/exports) en of de beoogde hosting haalbaar is."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 4 - Prijsbepaling-vaste-prijs",
+  "desc": "Deliverable Onderbouwde vaste prijs + pakketten plus calculatie en verzending."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Interne calculatie + tariefbepaling",
+  "desc": "Intern uren/kosten calculeren en tarief bepalen als onderbouwing voor de vaste prijs."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Onderbouwde vaste prijs + pakketten opstellen",
+  "desc": "Vaste prijs met onderbouwing en pakketopties. Geen losse offerte. Dit is de deliverable."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Prijs + pakketten opsturen (mail)",
+  "desc": "De onderbouwde prijs en pakketten per mail naar de klant sturen."
+ },
+ {
+  "depth": 1,
+  "type": "poort",
+  "name": "Beslismoment (Go/No-Go + pakketkeuze)",
+  "desc": "Klant beslist Go/No-Go, kiest een pakket en tekent. Pakketkeuze is klant-antwoord, geen Impertio-taak."
+ },
+ {
+  "depth": 1,
+  "type": "poort",
+  "name": "Kick-off (na aanbetaling)",
+  "desc": "Start van het vervolg na ontvangen aanbetaling."
+ },
+ {
+  "depth": 0,
+  "type": "fase",
+  "name": "Fase 2 - Realiseren",
+  "desc": "Van ontwerp via bouw en migratie naar geaccepteerde oplossing. Eindigt met getekende acceptatie."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 1 - Ontwerp & Architectuur",
+  "desc": "Vier ontwerp-deliverables plus bronnen-inventarisatie en aftekening door klant."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Bronnen-inventarisatie (volumes tellen)",
+  "desc": "Bronsystemen in kaart, recordvolumes per bron tellen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Technisch Ontwerp Document (TOD) opstellen",
+  "desc": "Schrijf-deliverable. ADR/ontwerpbeslissingen = bullets sectie 14, diagrammen/tabellen = bullets. DoD: iteratief bijgewerkt tot klant-herkenbaar."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Datamigratieplan opstellen",
+  "desc": "Bullets: bronnen, mapping-aanpak, drempels, cutover-strategie."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Infrastructuur-/beveiligingsontwerp opstellen",
+  "desc": "Bullets: hosting, netwerk, rollen/rechten-model, beveiligingsmaatregelen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Testplan opstellen",
+  "desc": "Bullets: testtypen, exitcriteria, UAT-aanpak."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Ontwerp laten aftekenen door klant",
+  "desc": "Klant tekent de ontwerp-documenten af voordat de bouw start."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 2 - Ontwikkeling & Configuratie",
+  "desc": "Uitvoering, geen ontwerp-deliverable. Instrumenten: readiness-checklist en registers."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Omgevingen klaarzetten (dev/test/prod)",
+  "desc": "Drie omgevingen inrichten en beschikbaar maken."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Iteratief bouwen + configureren per module",
+  "desc": "Per module bouwen en configureren. Iteratief is werkwijze/DoD, geen losse taak."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Maatwerk bouwen waar eis het vraagt",
+  "desc": "Custom-ontwikkeling alleen waar een functionele eis dat afdwingt."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Rollen/rechten/basisgegevens inrichten",
+  "desc": "Rolmodel, permissies en basisdata laden conform infra-/beveiligingsontwerp."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Integraties aansluiten (happy + foutpad)",
+  "desc": "Koppelingen aansluiten en zowel succes- als foutpad beproeven (foutpad = bullet)."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Tussentijds testen + demo/stop-momenten",
+  "desc": "Iteratieve interne checks met demo/stop-momenten richting klant."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Readiness-check go/no-go (klant tekent)",
+  "desc": "Go/no-go aan de hand van de readiness-checklist. Klant tekent voor afronding bouwfase."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Change-/meerwerk-log",
+  "desc": "Apart doorlopend document, geen open taak. Leeft in Documentatie_doorlopend / Realiseren Stap-2."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "As-built configuratie-overzicht",
+  "desc": "Apart doorlopend document met de daadwerkelijk gebouwde inrichting. Leeft in Documentatie_doorlopend / Realiseren Stap-2."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 3 - Data-migratie",
+  "desc": "Mapping, dry run, validatie, opschoning, cutover en migratierapport."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Mapping-/transformatieregister",
+  "desc": "Apart document: bron-naar-doel mapping en transformatieregels."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Cutover-draaiboek opstellen",
+  "desc": "Schrijf-deliverable: stappen, volgorde, rollback en go/no-go-criteria voor de echte cutover."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Proefmigratie (dry run) uitvoeren",
+  "desc": "Volledige migratie op test-data draaien."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Valideren (tellen/checksums/steekproef)",
+  "desc": "Aantallen, checksums en steekproeven controleren tegen drempels."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Correcties + herhalen tot binnen drempels",
+  "desc": "Bevindingen corrigeren en dry run herhalen tot binnen de drempels. Herhalen = DoD."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Opschoning brondata uitvoeren",
+  "desc": "Vervuilde/dubbele brondata opschonen voor de echte cutover."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Echte cutover volgens draaiboek",
+  "desc": "Productie-migratie uitvoeren conform cutover-draaiboek."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Post-validatie & go/no-go",
+  "desc": "Na cutover valideren en go/no-go-besluit nemen."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Validatie-controlelog",
+  "desc": "Apart document: log van uitgevoerde controles en uitkomsten."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Migratierapport opstellen",
+  "desc": "Schrijf-deliverable: aantallen, afwijkingen, eindstatus van de migratie."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 4 - Testen & Validatie",
+  "desc": "Interne tests, niet-functionele tests, UAT en acceptatie."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Testregister (traceerbaarheid)",
+  "desc": "Apart document: koppeling test naar requirement/epic/story."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "UAT-draaiboek/acceptatieprotocol opstellen",
+  "desc": "Schrijf-deliverable: UAT-scenario's en acceptatiecriteria/protocol."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Interne tests (unit/integratie/systeem)",
+  "desc": "Functionele tests op unit-, integratie- en systeemniveau."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Niet-functionele tests (performance/beveiliging)",
+  "desc": "Performance- en beveiligingstests uitvoeren."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Bevindingen oplossen + hertesten",
+  "desc": "Defects oplossen en opnieuw testen. Hertesten = DoD."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Bevindingenregister",
+  "desc": "Apart document: defects/bevindingen met status."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "UAT voorbereiden",
+  "desc": "Testdata, accounts en scenario's klaarzetten voor de klant-UAT."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "UAT uitvoeren met klant",
+  "desc": "Acceptatietest samen met de klant doorlopen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Beoordelen tegen exitcriteria",
+  "desc": "Resultaten toetsen aan de exitcriteria uit het Testplan."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Testrapport opstellen",
+  "desc": "Schrijf-deliverable: testuitkomsten, dekking, restpunten en advies. Onderbouwt het acceptatiebesluit."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Acceptatiebesluit + aftekening (klant)",
+  "desc": "Klant neemt het acceptatiebesluit en tekent af."
+ },
+ {
+  "depth": 1,
+  "type": "poort",
+  "name": "Acceptatie-poort (acceptatie getekend)",
+  "desc": "Fase-uitgang: oplossing geaccepteerd en getekend. Door naar Fase 3."
+ },
+ {
+  "depth": 0,
+  "type": "fase",
+  "name": "Fase 3 - Implementeren",
+  "desc": "Gebruikers opleiden en het systeem live brengen met gestructureerde nazorg en overdracht."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 1 - Training",
+  "desc": "Gebruikers competent maken voor go-live."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Trainingsplan opstellen",
+  "desc": "Bullets: doelgroepen/rollen, scope per rol, planning, methodiek, competentiecriteria."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Oefenomgeving en trainingsaccounts klaarzetten",
+  "desc": "Sandbox/oefenomgeving plus deelnemer-accounts inrichten zodat veilig geoefend kan worden."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Schermafbeeldingen maken (na inrichting)",
+  "desc": "Schermafbeeldingen van het ingerichte systeem vastleggen als basis voor handleidingen en quick-reference."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Trainingsmateriaal en handleidingen maken",
+  "desc": "Bullets: per rol stap-voor-stap, quick-reference. Verwerkt de gemaakte schermafbeeldingen."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Trainingsregister",
+  "desc": "Register: deelnemers, sessies, aanwezigheid en competentie-status per deelnemer."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Trainingssessies geven",
+  "desc": "De geplande trainingssessies uitvoeren met de deelnemers."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Feedback verzamelen",
+  "desc": "Deelnemer-feedback actief ophalen via evaluatieformulier of gesprek."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Follow-up voor niet-competente deelnemers",
+  "desc": "Gerichte herhaling of extra begeleiding tot de gewenste competentie is bereikt."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Trainingsverslag opstellen",
+  "desc": "Bullets: opkomst, competentie per deelnemer, samengevatte feedback, openstaande punten/advies. DoD: iteratief tot klant-herkenbaar."
+ },
+ {
+  "depth": 1,
+  "type": "step",
+  "name": "Stap 2 - Go-live & Nazorg",
+  "desc": "Systeem in productie nemen, intensief begeleiden en netjes overdragen aan beheer."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Go-live-draaiboek opstellen",
+  "desc": "Bullets: cutover-stappen en volgorde, rollen/verantwoordelijken, communicatieplan, rollback-scenario, smoke-test-checklist, go/no-go-criteria."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Go/no-go-vergadering",
+  "desc": "Formeel beslismoment of de cutover doorgaat, getoetst aan de go/no-go-criteria."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Cutover en smoke test",
+  "desc": "Live-gang volgens het draaiboek plus directe smoke-test-verificatie."
+ },
+ {
+  "depth": 2,
+  "type": "register",
+  "name": "Hypercare-log",
+  "desc": "Register: incidenten, vragen en opgeloste punten tijdens de nazorgperiode."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Hypercare/nazorg uitvoeren",
+  "desc": "Intensieve support direct na go-live: snel reageren, incidenten oplossen, bijsturen."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Beheeroverdracht uitvoeren",
+  "desc": "Project gaat over naar doorlopend Impertio-beheer. Klant krijgt gebruikstoegang tot ERPNext (data invoeren, eigen templates/reports/config). As-built, toegangen en kennis vastgelegd."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Beheerafspraak / SLA vastleggen",
+  "desc": "Doorlopend beheer door Impertio (recurring, los van de eenmalige vaste projectprijs). SLA legt het service-niveau vast (niveau bespreekbaar). De klant beheert het systeem NIET zelf; gebruikt ERPNext wel zelf (incl. eigen templates)."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Evaluatiegesprek met klant",
+  "desc": "Afsluitend gesprek over doelrealisatie, tevredenheid en vervolg."
+ },
+ {
+  "depth": 2,
+  "type": "taak",
+  "name": "Evaluatierapport opstellen",
+  "desc": "Bullets: doelrealisatie ten opzichte van scope, lessons learned, openstaande punten, vervolgkansen. DoD: iteratief tot klant-herkenbaar."
+ }
+]

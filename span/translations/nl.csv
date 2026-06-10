@@ -1,8 +1,6 @@
-Pain Point,Knelpunt
 Requirement,Eis
 Requirement Link,Eis-koppeling
 Requirement ID,Eis-ID
-Pain Point ID,Knelpunt-ID
 Title,Titel
 Priority (MoSCoW),Prioriteit (MoSCoW)
 Description,Omschrijving
@@ -45,3 +43,7 @@ Task,Taak
 Bug,Bug
 Story,Story
 Epic,Epic
+Requirement Source,Eis-bron
+Source ID,Bron-ID
+Problem,Knelpunt
+Source (Eis-bron),Bron

@@ -41,6 +41,9 @@ fixtures = [
 # Task list view: board-state-gekleurde indicatoren (Fase 2).
 doctype_list_js = {"Task": "public/js/task_list.js"}
 
+# Project form: knop "Span: structuur uitrollen" (roept span.api.rollout_span_structure).
+doctype_js = {"Project": "public/js/project.js"}
+
 # ---------------------------------------------------------------------------
 # Document-events (app-methode, imports toegestaan; geen Server Script-sandbox).
 # Fase 1: Phase/Epic -> is_group via task_validate.

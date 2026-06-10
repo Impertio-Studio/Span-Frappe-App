@@ -4,11 +4,19 @@ Aangeroepen via doc_events in hooks.py. Imports zijn hier toegestaan,
 in tegenstelling tot Server Scripts.
 """
 
+import json
+import os
+
 import frappe
 from frappe import _
 
 # Werktypes die altijd een group-task (NestedSet-ouder) zijn.
 GROUP_WORK_TYPES = {"Phase", "Step", "Epic"}
+
+# Map skelet-type (uit span_skelet.json) -> custom_work_type op de Task.
+# Poorten worden als gewone Task gemodelleerd (met een mijlpaal-prefix in de subject);
+# registers zijn aparte documenten en worden NIET als taak uitgerold.
+SKELET_TYPE_TO_WORK_TYPE = {"fase": "Phase", "step": "Step", "taak": "Task", "poort": "Task"}
 
 # Eenrichtings mapping: het bord (custom_board_state) stuurt de native status.
 # Overdue en Template staan hier bewust NIET in: Overdue beheert ERPNext zelf
@@ -116,3 +124,81 @@ def enforce_group_for_work_type(doc):
 	"""
 	if doc.get("custom_work_type") in GROUP_WORK_TYPES and not doc.is_group:
 		doc.is_group = 1
+
+
+# ---------------------------------------------------------------------------
+# Structuur-generator (fase 2)
+# Rolt het vaste Span-skelet (3 fases, hun steps, standaard-taken, poorten) uit
+# op een Project. Hybride aanpak: dit is de Span-hook-engine; de trigger (een
+# knop op het Project, of een Project Template) wordt erbovenop gezet.
+# Bron = span/pm/span_skelet.json (gegenereerd uit de lean-analyse, single source).
+# ---------------------------------------------------------------------------
+
+
+def _load_span_skelet():
+	"""Lees het standaard-skelet (depth-encoded rijen) uit de app."""
+	path = os.path.join(frappe.get_app_path("span"), "pm", "span_skelet.json")
+	with open(path, encoding="utf-8") as f:
+		return json.load(f)
+
+
+@frappe.whitelist()
+def rollout_span_structure(project):
+	"""Rol het standaard Span-skelet uit op een Project.
+
+	- Idempotent: weigert als er al een Phase voor dit project bestaat (geen dubbele uitrol).
+	- Registers (type 'register') worden NIET als taak aangemaakt: dat zijn aparte documenten.
+	- Poorten worden als Task gemodelleerd met een mijlpaal-prefix in de subject.
+	- De structuurregels (Phase onder Project, Step onder Phase) worden door task_validate
+	  afgedwongen; daarom krijgt elke taak project + de juiste parent_task mee.
+	"""
+	if not project:
+		frappe.throw(_("Project is verplicht."))
+	if not frappe.has_permission("Project", "write", project):
+		frappe.throw(_("Niet toegestaan."), frappe.PermissionError)
+	if frappe.db.exists("Task", {"project": project, "custom_work_type": "Phase"}):
+		frappe.throw(_("De Span-structuur is al uitgerold op dit project."))
+
+	skelet = _load_span_skelet()
+	parent_by_depth = {}
+	created = 0
+	skipped_registers = 0
+
+	for row in skelet:
+		depth = row["depth"]
+		ntype = row["type"]
+		name = row["name"]
+		desc = row.get("desc") or None
+
+		if ntype == "register":
+			skipped_registers += 1
+			continue
+
+		work_type = SKELET_TYPE_TO_WORK_TYPE.get(ntype, "Task")
+		subject = f"◆ {name}" if ntype == "poort" else name
+		parent = parent_by_depth.get(depth - 1)
+
+		task = frappe.get_doc(
+			{
+				"doctype": "Task",
+				"subject": subject,
+				"project": project,
+				"parent_task": parent,
+				"custom_work_type": work_type,
+				"custom_board_state": "Backlog",
+				"description": desc,
+			}
+		)
+		task.insert(ignore_permissions=True)
+
+		# Onthoud deze node als ouder voor diepere rijen; ruim diepere niveaus op.
+		parent_by_depth[depth] = task.name
+		for d in [d for d in parent_by_depth if d > depth]:
+			del parent_by_depth[d]
+		created += 1
+
+	return {
+		"project": project,
+		"created": created,
+		"skipped_registers": skipped_registers,
+	}
