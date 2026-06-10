@@ -112,13 +112,27 @@
  },
  {
   "doctype": "Custom Field",
+  "name": "Task-custom_meerwerk_status",
+  "dt": "Task",
+  "module": "PM",
+  "fieldname": "custom_meerwerk_status",
+  "label": "Scope Status",
+  "fieldtype": "Select",
+  "options": "\nTo Review\nApproved\nFuture Project",
+  "insert_after": "custom_package",
+  "in_standard_filter": 1,
+  "read_only": 1,
+  "description": "Scope-bewaking (fase 2): een nieuw Epic/Story op een Go-project zonder link naar een geaccepteerde eis wordt automatisch 'To Review'. Een Projects Manager keurt goed (Approved) of parkeert als Future Project."
+ },
+ {
+  "doctype": "Custom Field",
   "name": "Task-custom_span_section_end",
   "dt": "Task",
   "module": "PM",
   "fieldname": "custom_span_section_end",
   "label": "",
   "fieldtype": "Section Break",
-  "insert_after": "custom_package",
+  "insert_after": "custom_meerwerk_status",
   "collapsible": 0
  },
  {
@@ -133,5 +147,19 @@
   "insert_after": "status",
   "in_standard_filter": 1,
   "description": "Pakket gekozen bij het Beslismoment (na Doorgronden). Triggert de tier-cancel-logica (fase 2)."
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Project-custom_decision",
+  "dt": "Project",
+  "module": "PM",
+  "fieldname": "custom_decision",
+  "label": "Decision (Go/No-Go)",
+  "fieldtype": "Select",
+  "options": "Pending\nGo\nNo-Go",
+  "default": "Pending",
+  "insert_after": "custom_tier",
+  "in_standard_filter": 1,
+  "description": "Het Go/No-Go-besluit aan het Beslismoment (poort na Doorgronden). De Doorgronden-fase kan pas op Done als dit Go is."
  }
 ]

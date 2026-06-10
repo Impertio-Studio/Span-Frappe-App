@@ -125,7 +125,13 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
+ "links": [
+  {
+   "link_doctype": "Requirement Link",
+   "link_fieldname": "requirement",
+   "group": "Coverage"
+  }
+ ],
  "module": "PM",
  "name": "Requirement",
  "owner": "Administrator",

@@ -42,7 +42,11 @@ fixtures = [
 doctype_list_js = {"Task": "public/js/task_list.js"}
 
 # Project form: knop "Span: structuur uitrollen" (roept span.api.rollout_span_structure).
-doctype_js = {"Project": "public/js/project.js"}
+# Task form: knop "Span: Link Requirement" (snel een Requirement Link leggen).
+doctype_js = {
+	"Project": "public/js/project.js",
+	"Task": "public/js/task.js",
+}
 
 # ---------------------------------------------------------------------------
 # Document-events (app-methode, imports toegestaan; geen Server Script-sandbox).
@@ -53,5 +57,14 @@ doctype_js = {"Project": "public/js/project.js"}
 doc_events = {
 	"Task": {
 		"validate": "span.api.task_validate",
+		"on_update": "span.api.roll_requirements_for_task",
+	},
+	"Requirement Link": {
+		"after_insert": "span.api.requirement_link_changed",
+		"on_update": "span.api.requirement_link_changed",
+		"on_trash": "span.api.requirement_link_changed",
+	},
+	"Project": {
+		"on_update": "span.api.project_tier_changed",
 	},
 }
