@@ -120,8 +120,8 @@ Datalaag = Engelse keys/labels + Engelse select-waarden. NL-weergave komt mee me
 | **Epic** | Een groot feature-thema dat meerdere Stories bundelt. Altijd Engels. Structureel niveau 4. |
 | **Story** | Een werk-item dat een eis uitdrukt als gebruikerswaarde ("Als gebruiker wil ik..."). Altijd Engels. Structureel niveau 5. |
 | **Bug** | Een werk-item dat een defect of fout beschrijft. Structureel niveau 5. |
-| **Requirement** (Eis) | Een los doctype dat vastlegt wat het systeem moet doen of zijn (het "wat"). Staat los van de werk-boom en heeft een eigen levenscyclus: Draft, Agreed, Built, Tested, Accepted. Een eis heeft een type (Functioneel of Niet-functioneel), een MoSCoW-prioriteit, een herkomst en een toetsbaar acceptatiecriterium. |
-| **Knelpunt** (Pain Point) | Een eigen doctype (datalaag-naam `Pain Point`, NL-weergave "Knelpunt") dat een pijnpunt, risico of probleem in de huidige werkwijze van de klant beschrijft. Wordt opgehaald tijdens Fase 1 (Doorgronden) en vormt de bron van eisen. |
+| **Requirement** (Eis) | Een los doctype dat vastlegt wat het systeem moet doen of zijn (het "wat"). Staat los van de werk-boom en heeft een eigen levenscyclus: Draft, Agreed, Built, Tested, Accepted (de eerste vier automatisch afgeleid uit de dekking, Accepted handmatig). Een eis heeft een type (Functioneel of Niet-functioneel), een MoSCoW-prioriteit, een herkomst (Requirement Source) en een toetsbaar acceptatiecriterium. |
+| **Requirement Source** (Bron) | Een eigen doctype dat elke herkomst van een eis als first-class record vastlegt. Heeft een `type`: Problem, Process, System, Data, Role, Risk, Wish of Technical. Het oude `Pain Point`-doctype is hierin opgegaan: een knelpunt is nu een Requirement Source met `type = Problem`. Symmetrisch model: élke eis-herkomst is een gelijkwaardig record, geen aparte asymmetrie meer. Wordt opgehaald tijdens Fase 1 (Doorgronden) en vormt de bron van eisen. |
 | **Requirement Link** | Een junction-record dat een werk-item (Story, Epic, Test, Task) koppelt aan een Requirement. Drie velden: het werk-item, het relatietype (implements / verifies / depends-on) en de Requirement. Maakt many-to-many-koppelingen mogelijk en draagt zelf betekenis. |
 
 ### Prioritering en tier
@@ -164,9 +164,9 @@ Onderstaande beslissingen zijn vastgelegd in het levende document `Span-Architec
 
 - **RACI** [GEPLAND, fase-2]: licht mechanisme, maar alle 4 rollen behouden. R via native `_assign` (meerdere), A via `custom_accountable` (precies 1, de default-tekenaar per poort), C (Consulted) en I (Informed) via tags. De Klant tekent Scope, Prijs, Ontwerp, UAT en Go-live; de Consultant tekent de interne readiness en de migratie-go. Geen zware RACI-matrix-doctype, maar C en I blijven bestaan.
 - **Beheer/SLA** [GEPLAND]: Impertio beheert het systeem doorlopend (recurring), los van de eenmalige vaste projectprijs. De klant beheert het systeem NIET zelf (technisch beheer is Impertio), maar gebruikt ERPNext wel zelf (data invoeren, eigen templates, reports en configuratie). Dit levert twee taken in Fase 3 Stap 2: "Beheeroverdracht uitvoeren" (project gaat over naar Impertio-beheer, klant krijgt gebruikstoegang) en "Beheerafspraak / SLA vastleggen" (SLA-niveau bespreekbaar).
-- **Structuur-generator** [GEPLAND]: hybride. Native ERPNext Project Template voor de taakboom + Span-hook voor tier, requirements en poorten.
-- **Beslismoment** [GEPLAND]: een nieuw veld `Project.custom_decision` (waarden `Pending` / `Go` / `No-Go`); het Beslismoment zelf staat als mijlpaaltaak in de boom (poort tussen Doorgronden en Realiseren).
-- **Poort HARD** [GEPLAND]: een fase is pas af als alle taken op `Done` staan EN er handmatig is afgetekend. Geen per-step blokkade, alleen per fase.
+- **Structuur-generator** [GEBOUWD]: whitelisted `span.api.rollout_span_structure(project)` rolt het lean skelet (`span/pm/span_skelet.json`, 86 rijen) uit als Task-tree (Phase/Step/Task, poorten met "◆ "-prefix). Idempotent (weigert als er al een Phase onder het project staat); registers (type register) worden NIET als taak aangemaakt. Trigger: knop "Structuur uitrollen" in de groep "Span" op het Project-formulier (`public/js/project.js`).
+- **Beslismoment** [GEBOUWD]: het veld `Project.custom_decision` (waarden `Pending` / `Go` / `No-Go`, default `Pending`) draagt het Go/No-Go-besluit. Er is bewust GEEN aparte mijlpaaltaak gebouwd: de Doorgronden-poort uit het skelet ís het Beslismoment, gehandhaafd via `enforce_phase_gate` + `custom_decision`.
+- **Poort HARD** [GEBOUWD]: een Phase mag pas op board_state `Done` als al haar onderliggende (niet-group) taken klaar zijn. De Doorgronden-fase vereist bovendien `Project.custom_decision == "Go"`. Geen per-step blokkade, alleen per fase. Afgedwongen via `enforce_phase_gate`.
 - **Stap 4 Fase 1 = Prijsbepaling-vaste-prijs** [GEPLAND]: geen losse offerte. Het apart presenteren is geschrapt; de onderbouwde prijs + pakketten gaan per mail. De pakketkeuze is een klant-antwoord bij het Beslismoment, geen Impertio-taak.
 - **Registers apart** [GEPLAND]: registers (Change-/meerwerk-log, Test-, Bevindingen-, Trainings-, Hypercare-register, etc.) zijn een apart doorlopend document (type register), geen open taak.
 - **Billing in Span** [GEPLAND, geparkeerd]: facturatie-koppeling komt later in Span, nu bewust geparkeerd.
@@ -230,23 +230,25 @@ Bron: `span/fixtures/custom_field.json` (module `PM`). Alle velden zitten in een
 
 **Belangrijk over de twee Link-velden:** `custom_phase` en `custom_epic` zijn **afgeleide, read-only** velden. Ze worden niet handmatig gezet maar door de validate-hook gevuld (zie `set_span_ancestors` in B.7). Ze maken plat filteren mogelijk zonder de NestedSet te hoeven traversen.
 
-### Uitbreiding op Task: package **[GEBOUWD]**
+### Uitbreidingen op Task: package en meerwerk **[GEBOUWD]**
 
 > [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen).
 
 | Veld | Type | Opties / uitleg | Status |
 |---|---|---|---|
 | `custom_package` | Select | `Basis / Plus / Premium / Future`. Per epic/story, afgeleid uit de MoSCoW-prioriteit van de gekoppelde Requirement. Houdt de reden vast (reversibel bij tier-upgrade). | [GEBOUWD] |
+| `custom_meerwerk_status` | Select | `(leeg) / To Review / Approved / Future Project`, `read_only`. Scope-bewaking: een nieuw Epic/Story op een Go-project dat (nog) niet via een Requirement Link aan een eis hangt, krijgt automatisch `To Review` (zie `flag_meerwerk`, B.8.3). Een Projects Manager zet het op `Approved` of `Future Project`. | [GEBOUWD] |
 
 ---
 
-## B.3 Uitbreiding op Project (custom field) **[GEBOUWD]**
+## B.3 Uitbreidingen op Project (custom fields) **[GEBOUWD]**
 
-> [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen). De tier-cancel-logica zelf blijft [GEPLAND] (zie B.8.3).
+> [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen). De tier-cancel-logica is meegebouwd in fase 2 (zie B.8.3).
 
 | Veld | Type | Opties / uitleg | Status |
 |---|---|---|---|
 | `custom_tier` | Select | `Basis / Plus / Premium`. Gezet op het Beslismoment (Go/No-Go) na Doorgronden. Triggert de tier-cancel-logica (zie B.8.3). | [GEBOUWD] |
+| `custom_decision` | Select | `Pending / Go / No-Go`, default `Pending`. Het Go/No-Go-besluit aan het Beslismoment (de poort na Doorgronden). De Doorgronden-fase mag pas op `Done` als dit veld op `Go` staat (zie `enforce_phase_gate`, B.8.3). | [GEBOUWD] |
 
 ---
 
@@ -275,9 +277,9 @@ Bron: `span/pm/doctype/span_task_discipline/span_task_discipline.json`. Dit is d
 
 ---
 
-## B.6 Het eisen-vlak: Requirement, Requirement Link, Pain Point (NL-weergave: Knelpunt) **[GEBOUWD]**
+## B.6 Het eisen-vlak: Requirement, Requirement Link, Requirement Source **[GEBOUWD]**
 
-> [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen). De doctypes `Requirement`, `Requirement Link` en `Pain Point` bestaan in de code op `development`. De afgeleide server-logica (eis-status-roll, dekkings-rapport) blijft [GEPLAND], zie B.8.3.
+> [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen). De doctypes `Requirement`, `Requirement Link` en `Requirement Source` bestaan in de code op `development`. De afgeleide server-logica (eis-status-roll) en het dekkingsrapport (Span Coverage) zijn in fase 2 meegebouwd, zie B.8.3. Het oude `Pain Point`-doctype is verwijderd en opgegaan in Requirement Source (`type = Problem`).
 
 Het besloten ontwerp introduceert een **tweede vlak** naast de werkboom. Een eis is het *wat*, een story het *hoe*. Ze leven naast elkaar en klikken aan elkaar vast via een junction. Een eis is bewust **geen Task-type**, omdat:
 
@@ -297,13 +299,13 @@ De eis als contract. Lean gehouden: genoeg om contract te zijn, niet meer. `trac
 | `type` | Select | `Functional / Non-Functional`. | [GEBOUWD] |
 | `title` | Data | Toetsbare titel. | [GEBOUWD] |
 | `priority` | Select | MoSCoW: `Must / Should / Could / Won't`. Stuurt tier/scope (zie B.6.4). | [GEBOUWD] |
-| `status` | Select | `Draft / Agreed / Built / Tested / Accepted`. Handmatig; automatische afleiding uit gelinkte stories/tests is [GEPLAND] (zie B.6.3). | [GEBOUWD] |
+| `status` | Select | `Draft / Agreed / Built / Tested / Accepted`. De eerste vier worden automatisch afgeleid uit de Requirement Link-dekking (zie B.6.3); `Accepted` is het handmatige eindbesluit en wordt door de roll nooit overschreven. | [GEBOUWD] |
 | `project` | Link -> Project | `reqd`. Het project waartoe de eis behoort. | [GEBOUWD] |
 | `description` | Text Editor | Toetsbare omschrijving. | [GEBOUWD] |
 | `acceptance_criterion` | Small Text | De Definition of Done van de eis. | [GEBOUWD] |
-| `source_type` | Select | Engelse waarden: `Pain Point / Process / System / Data / Role / Risk / Wish / Technical`. Geeft elke eis een herkomst, ook eisen uit andere bronnen dan een Pain Point (regelgeving, klant-briefing). | [GEBOUWD] |
+| `source` | Link -> Requirement Source | De concrete bron van de eis (knelpunt, proces, systeem, regelgeving, wens). Vervangt de oude Pain Point-link; élke herkomst is nu een first-class Requirement Source. | [GEBOUWD] |
+| `source_type` | Select | `read_only`, `fetch_from: source.type`. Spiegelt het type van de gekoppelde Requirement Source: `Problem / Process / System / Data / Role / Risk / Wish / Technical`. | [GEBOUWD] |
 | `source_document` | Data | Verwijzing naar het brondocument. | [GEBOUWD] |
-| `source` | Link -> Pain Point | De concrete Pain Point-bron (indien `source_type = Pain Point`). | [GEBOUWD] |
 
 ### B.6.2 Requirement Link (junction) **[GEBOUWD]**
 
@@ -320,13 +322,19 @@ Eén los recordje per koppeling: "dit werk-item *doet iets* met die eis". Standa
 
 > Lees een rij als een zin: "Story IFC-render **implements** F-01". Twee stories kunnen samen F-01 dekken; een UAT-test **verifies** F-02. Precies daarom kan de eis geen boom-knoop zijn.
 
-### B.6.3 Eis-status: automatisch afgeleid **[GEPLAND]**
+### B.6.3 Eis-status: automatisch afgeleid **[GEBOUWD]**
 
-De status volgt het werk (met handmatige override):
+`derive_requirement_status(req)` leidt `Requirement.status` af uit de Requirement Link-dekking. De keten is **Draft -> Agreed -> Built -> Tested**; `Accepted` is een handmatig eindbesluit en wordt door de roll nooit overschreven.
 
-- Alle implementerende stories op board-state `Done` -> eis-status **Built**.
-- Verifiërende test(s) groen -> eis-status **Tested**.
-- UAT-aftekening -> eis-status **Accepted**.
+| Status | Voorwaarde |
+|---|---|
+| **Draft** | Geen `implements`-link. |
+| **Agreed** | Minstens 1 `implements`-link, maar niet alle implementerende stories zijn Done. |
+| **Built** | Alle implementerende stories zijn Done. |
+| **Tested** | Built, én alle `verifies`-tests zijn Done. |
+| **Accepted** | Handmatig eindbesluit (UAT-aftekening). Niet overschreven door de roll. |
+
+De roll wordt getriggerd via `requirement_link_changed` (Requirement Link `after_insert` / `on_update` / `on_trash`) en `roll_requirements_for_task` (Task `on_update`).
 
 ### B.6.4 MoSCoW -> tier/package **[GEPLAND]**
 
@@ -339,21 +347,30 @@ De prioriteit op de eis bepaalt het pakket en daarmee de scope:
 | Could | nice-to-have, eerst geschrapt bij krapte | +PREMIUM |
 | Won't (this time) | bewust niet nu, geparkeerd | Future |
 
-### B.6.5 Pain Point (NL-weergave: Knelpunt) **[GEBOUWD]**
+### B.6.5 Requirement Source (de bron) **[GEBOUWD]**
 
 > [GEBOUWD] (code op branch `development`; bench migrate-verificatie op de instance nog te doen).
 
-Eigen doctype voor knelpunten uit het Analyserapport, zodat de keten een echte bron heeft. Datalaag = Engelse keys/labels; NL-weergave "Knelpunt" via `nl.csv` (zie A.3.4).
+Generiek getypeerd bron-doctype, zodat élke eis-herkomst een first-class record is (symmetrisch model, geen asymmetrie meer). Vervangt het oude `Pain Point`-doctype: een knelpunt is nu een Requirement Source met `type = Problem`. Datalaag = Engelse keys/labels; admin-helpteksten in `nl.csv` (zie A.3.4).
 
 | Veld | Type | Opties / uitleg | Status |
 |---|---|---|---|
-| `pain_point_id` | Data | `read_only`. Leesbare code, autoname `PP-01` per project. | [GEBOUWD] |
-| `description` | Text | `reqd`. Wat is het knelpunt. | [GEBOUWD] |
-| `priority` | Select | `High / Medium / Low`. | [GEBOUWD] |
-| `frequency` | Data | Hoe vaak het voorkomt. | [GEBOUWD] |
-| `impact` | Text | De gevolgen. | [GEBOUWD] |
-| `source` | Data | Herkomst (transcript-passage, interview, observatie). | [GEBOUWD] |
+| `source_id` | Data | `read_only`. Leesbare code via controller-autoname, per project per type. Docname = `{project}-{source_id}`. | [GEBOUWD] |
+| `type` | Select | `Problem / Process / System / Data / Role / Risk / Wish / Technical`. Bepaalt de autoname-prefix (zie hieronder). | [GEBOUWD] |
 | `project` | Link -> Project | `reqd`. Het project. | [GEBOUWD] |
+
+**Autoname-prefixes per type** (per-project teller):
+
+| `type` | Prefix | Voorbeeld |
+|---|---|---|
+| Problem | `K` | `K-01` |
+| Wish | `W` | `W-01` |
+| Risk | `R` | `R-01` |
+| Technical | `T` | `T-01` |
+| Process | `P` | `P-01` |
+| System | `S` | `S-01` |
+| Data | `D` | `D-01` |
+| Role | `RO` | `RO-01` |
 
 ---
 
@@ -361,22 +378,33 @@ Eigen doctype voor knelpunten uit het Analyserapport, zodat de keten een echte b
 
 De kern van het datamodel is dat elke schakel mechanisch aan de volgende hangt. Klik een eis en je ziet de hele keten; een ontbrekende schakel is een scope-gat of test-gat.
 
+Pijlen dragen de **echte Requirement-Link-namen**, in de richting die ze waarmaakt: traceerbaarheid terug naar de bron.
+
 ```
-Knelpunt  ──►  Requirement  ──►  Requirement Link  ──►  Epic / Story  ──►  Task  ──►  Test
-(bron)         (de eis, wat)     (implements/verifies/   (het hoe)        (werk)    (verifies
-               source -> knelpunt  depends-on)                                       de eis)
+Requirement Source  ◄──source──  Requirement  ◄──implements──  Epic / Story  ──►  Task
+(de bron, type)                  (de eis, wat)  ◄──verifies────  Test           (het werk)
+                                     ▲ depends-on (eis -> eis)
 ```
 
-- **Knelpunt -> Requirement**: `Requirement.source` (Link -> Pain Point) + `source_type`/`source_document` voor niet-Pain-Point-bronnen. **[GEPLAND]**
-- **Requirement <-> Epic/Story/Test**: via **Requirement Link** (many-to-many, met `relation_type`). De pijlen tussen eis en werk/test zijn Requirement Links. **[GEPLAND]**
+**Definitieve pijl-semantiek** (Requirement Link `relation_type`):
+
+- **Story -> Requirement**: `implements`.
+- **Test -> Requirement**: `verifies`.
+- **Requirement -> Requirement Source** (de bron/knelpunt): `source` (`Requirement.source`, Link -> Requirement Source; `source_type` fetch_from `source.type`).
+- **Requirement -> Requirement**: `depends-on` (afhankelijkheid tussen eisen, indien nodig).
+
+Boxes kunnen meerdere in- en uit-links hebben (**M:N**): meerdere stories onder één eis, meerdere eisen op één bron.
+
+- **Bron <-> Requirement**: `Requirement.source` (Link -> Requirement Source) + `source_type` (fetch_from). **[GEBOUWD]**
+- **Requirement <-> Epic/Story/Test**: via **Requirement Link** (many-to-many, met `relation_type`). **[GEBOUWD]**
 - **Epic -> Story -> Task**: de native ERPNext Task-tree (`parent_task`), getypeerd via `custom_work_type`. **[GEBOUWD]**
-- **Test verifies Requirement**: een werk-item met een Requirement Link van type `verifies`. **[GEPLAND]**
+- **Test verifies Requirement**: een werk-item met een Requirement Link van type `verifies`. **[GEBOUWD]**
 
-Wat de keten oplevert (alles **[GEPLAND]**):
+Wat de keten oplevert (alles **[GEBOUWD]**):
 
-- **Rode draad als live rapport**: knelpunt -> eis -> story -> taak -> test -> bevinding, mechanisch. "Toon alles wat aan F-01 hangt" is één query.
-- **Tier afgeleid**: MoSCoW op de eisen geeft BASIS/PLUS/PREMIUM; de tierkeuze filtert automatisch welke stories meegaan.
-- **Dekking automatisch**: "Welke Must heeft geen story?" (scope-gat), "Welke eis heeft geen test?" (risico). Geen handwerk. Dit is het **dekkings-rapport** (hangt aan ambitie B).
+- **Rode draad als live rapport**: bron -> eis -> story -> taak -> test, mechanisch. "Toon alles wat aan F-01 hangt" is één query.
+- **Tier afgeleid**: MoSCoW op de eisen geeft BASIS/PLUS/PREMIUM; de tierkeuze cancelt automatisch het werk boven de tier (zie tier-cancel, B.8.3).
+- **Dekking automatisch**: het **Span Coverage**-rapport toont scope-gaten (eis zonder story) en test-gaten (eis zonder verifiërende test). Geen handwerk. Zie B.8.3.
 - **Change-impact**: een wijziging raakt eis X, dus welke stories en tests moeten herzien worden, in één klik.
 
 ---
@@ -393,11 +421,20 @@ In `hooks.py`:
 doc_events = {
     "Task": {
         "validate": "span.api.task_validate",
+        "on_update": "span.api.roll_requirements_for_task",
+    },
+    "Requirement Link": {
+        "after_insert": "span.api.requirement_link_changed",
+        "on_update": "span.api.requirement_link_changed",
+        "on_trash": "span.api.requirement_link_changed",
+    },
+    "Project": {
+        "on_update": "span.api.project_tier_changed",
     },
 }
 ```
 
-`task_validate` draait **na** de ERPNext-controller-validate, dus de hier gezette status overschrijft die van ERPNext (gewenst voor de bord-sync). Het is het centrale punt voor alle Span-Task-logica en roept vier functies aan:
+`task_validate` draait **na** de ERPNext-controller-validate, dus de hier gezette status overschrijft die van ERPNext (gewenst voor de bord-sync). Het is het centrale punt voor alle Span-Task-logica en roept de volgende functies aan:
 
 | Functie in `api.py` | Wat het doet | Status |
 |---|---|---|
@@ -405,6 +442,17 @@ doc_events = {
 | `enforce_structure_rules(doc)` | Dwingt de twee structuurregels af: een Phase vereist `project` (anders `frappe.throw`); een Step vereist een Phase-voorouder via `_has_phase_ancestor`. | [GEBOUWD] |
 | `set_span_ancestors(doc)` | Loopt de `parent_task`-keten omhoog en vult `custom_phase` en `custom_epic` met de dichtstbijzijnde Phase- resp. Epic-voorouder. | [GEBOUWD] |
 | `sync_board_state_to_status(doc)` | Mapt `custom_board_state` -> native `status` volgens `BOARD_STATE_TO_STATUS`. Eenrichting. | [GEBOUWD] |
+| `enforce_dependencies(doc)` | Harde `depends_on`-blokkade. Een taak mag pas naar board_state `Todo / In Progress / In Review / Done` als al haar native `depends_on`-taken `Done` of `Canceled` zijn. `Backlog` blijft altijd vrij. | [GEBOUWD] |
+| `enforce_phase_gate(doc)` | Een Phase mag pas op board_state `Done` als al haar onderliggende (niet-group) taken klaar zijn. De Doorgronden-fase vereist bovendien `Project.custom_decision == "Go"` (het Beslismoment / Go-No-Go). | [GEBOUWD] |
+| `flag_meerwerk(doc)` | Een nieuw Epic/Story op een Go-project zonder Requirement Link naar een geaccepteerde eis krijgt automatisch `custom_meerwerk_status = "To Review"`. Zichtbaar maken, niet blokkeren. | [GEBOUWD] |
+
+**Overige event-handlers (buiten `task_validate`):**
+
+| Functie in `api.py` | Trigger | Wat het doet | Status |
+|---|---|---|---|
+| `roll_requirements_for_task(doc)` | Task `on_update` | Herberekent de status van de aan deze taak gekoppelde eisen (zie B.6.3). | [GEBOUWD] |
+| `requirement_link_changed(doc)` | Requirement Link `after_insert` / `on_update` / `on_trash` | Triggert `derive_requirement_status` voor de betrokken eis (zie B.6.3). | [GEBOUWD] |
+| `project_tier_changed(doc)` | Project `on_update` | Zodra `Project.custom_tier` wijzigt, roept `cancel_work_above_tier` aan: annuleert alle (niet-group) taken met een hoger `custom_package` dan de tier (rang Basis<Plus<Premium<Future). Annulering via echte `doc.save()` zodat `track_changes` een **Version** vastlegt (scope-audittrail). | [GEBOUWD] |
 
 > Let op: `GROUP_WORK_TYPES` in de code bevat `Phase`, `Step` én `Epic`. De docstrings noemen soms alleen "Phase/Epic", maar de constante en `enforce_group_for_work_type` behandelen alle drie als group-task.
 
@@ -423,15 +471,37 @@ Het kanban-bord (`custom_board_state`) stuurt de native ERPNext `status`, nooit 
 
 `sync_board_state_to_status` zet de status alleen bij een gemapte board-state; anders blijft de bestaande status (inclusief `Overdue`) ongemoeid. `Overdue` en `Template` staan bewust niet in de map: `Overdue` beheert ERPNext zelf op einddatum, en er is geen bord-kolom die ernaar mapt. **Uren raken de status hier nooit.**
 
-### B.8.3 Geplande server-logica **[GEPLAND]**
+### B.8.3 Fase-2 server-logica en rapportage **[GEBOUWD]**
+
+> [GEBOUWD] in fase 2 (branch `development`, commits 49e37ab -> 8d8ea65). De afdwinging staat; de meeste functies zijn hierboven in B.8.1 al als handler beschreven.
 
 | Functie | Wat het doet | Status |
 |---|---|---|
-| Structuur-generator | Rolt bij projectaanmaak de drie fases, hun stappen en de standaard-taken uit. Hybride aanpak: native Project Template voor de taakboom + Span-hook voor tier/requirements/poorten. | [GEPLAND] |
-| Tier-cancel | Zodra `Project.custom_tier` gezet is, gaan eisen/stories boven de gekozen tier naar board-state `Canceled` (= native `Cancelled`). `custom_package` houdt de reden vast, dus reversibel bij tier-upgrade. Elke flip wordt gelogd via het Version-doctype. | [GEPLAND] |
-| Eis-status-roll | Leidt `Requirement.status` (Built/Tested/Accepted) automatisch af uit gelinkte stories/tests, met handmatige override. | [GEPLAND] |
-| Per-fase harde poorten | Validatie: Fase N moet af zijn (en de poort gepasseerd) voordat aan Fase N+1 gewerkt mag worden. Geen per-step blokkade. Het Beslismoment is de poort tussen Doorgronden en Realiseren. | [GEPLAND] |
-| Dekkings-rapport | Scope-gaten (eis zonder story) + test-gaten (eis zonder verifiërende test). Hangt aan ambitie B. | [GEPLAND] |
+| Structuur-generator | Whitelisted `span.api.rollout_span_structure(project)` rolt het lean skelet (`span/pm/span_skelet.json`, 86 rijen) uit als Task-tree (Phase/Step/Task, poorten met "◆ "-prefix). Idempotent (weigert als er al een Phase is); registers (type register) worden NIET als taak aangemaakt. Trigger: knop "Structuur uitrollen" (groep "Span") op het Project-formulier (`public/js/project.js`). | [GEBOUWD] |
+| Tier-cancel | `project_tier_changed` -> `cancel_work_above_tier`: zodra `Project.custom_tier` wijzigt, worden alle (niet-group) taken met een hoger `custom_package` dan de tier geannuleerd (rang Basis<Plus<Premium<Future). `custom_package` houdt de reden vast, dus reversibel bij tier-upgrade. Annulering via echte `doc.save()` zodat een **Version** wordt gelogd. | [GEBOUWD] |
+| Eis-status-roll | `derive_requirement_status` leidt `Requirement.status` (Draft/Agreed/Built/Tested) af uit de Requirement Link-dekking; `Accepted` blijft handmatig. Getriggerd via `requirement_link_changed` en `roll_requirements_for_task`. Zie B.6.3. | [GEBOUWD] |
+| Per-fase harde poorten | `enforce_phase_gate`: een Phase mag pas op `Done` als al haar onderliggende taken klaar zijn. De Doorgronden-fase vereist bovendien `Project.custom_decision == "Go"` (de poort tussen Doorgronden en Realiseren). Geen per-step blokkade. | [GEBOUWD] |
+| Dependency-afdwinging | `enforce_dependencies`: een taak mag pas uit `Backlog` zodra al haar native `depends_on`-taken `Done` of `Canceled` zijn. | [GEBOUWD] |
+| Meerwerk-flag | `flag_meerwerk`: een Epic/Story op een Go-project zonder eis-link krijgt `custom_meerwerk_status = "To Review"`. Een Projects Manager zet het op `Approved` of `Future Project`. | [GEBOUWD] |
+
+**Span Coverage (Script Report, ref `Requirement`)** **[GEBOUWD]**
+
+Het dekkingsrapport sluit de keten aan de eis-kant. Per eis: aantal `implements`-stories, hoeveel Done, aantal `verifies`-tests, hoeveel Done, en een dekkingsoordeel:
+
+| Oordeel | Betekenis |
+|---|---|
+| Scope Gap | geen story (`implements`-link ontbreekt) |
+| Incomplete | wel stories, niet alle Done |
+| Built | alle implementerende stories Done |
+| Tested | Built én alle verifiërende tests Done |
+| Accepted | handmatig afgetekend |
+
+De summary toont aantal eisen, **scope-gaten**, getest/geaccepteerd en **dekkingsgraad %**. De meerwerk-kant (story zonder eis-link) verschijnt op de Task-lijst via `custom_meerwerk_status = To Review`.
+
+**Requirement-Link UX** **[GEBOUWD]**
+
+- Requirement-formulier: Connections-groep **"Coverage"** toont de gekoppelde Requirement Links met ingebouwde add-knop (doctype `links`).
+- Task-formulier: knop **"Span > Link Requirement"** opent een nieuwe Requirement Link, voorgevuld met `work_item` + `relation_type = implements` (één klik om een To-Review-story aan een eis te hangen).
 
 ---
 
@@ -445,13 +515,16 @@ Het kanban-bord (`custom_board_state`) stuurt de native ERPNext `status`, nooit 
 
 **[GEBOUWD]** (code op branch `development`; bench migrate-verificatie op de instance nog te doen)
 
-- Doctypes: `Requirement`, `Requirement Link`, `Pain Point` (NL-weergave: Knelpunt).
-- Custom fields: `Task.custom_package`, `Project.custom_tier`.
+- Doctypes: `Requirement`, `Requirement Link`, `Requirement Source` (vervangt het verwijderde `Pain Point`).
+- Custom fields: `Task.custom_package`, `Task.custom_meerwerk_status`, `Project.custom_tier`, `Project.custom_decision`.
+- Server-logica (fase 2): structuur-generator (`rollout_span_structure` + Project-knop), tier-cancel (Version-gelogd), eis-status-roll, `enforce_dependencies`, `enforce_phase_gate` (+ `custom_decision` voor Doorgronden), `flag_meerwerk` (zie B.8.1 / B.8.3).
+- Rapportage: **Span Coverage** dekkingsrapport (Script Report, ref Requirement).
+- Requirement-Link UX: Connections "Coverage" op Requirement, Task-knop "Link Requirement".
 
 **[GEPLAND]**
 
-- Server-logica: structuur-generator, tier-cancel, eis-status-roll, per-fase poorten, dekkings-rapport (zie B.8.3).
 - RACI licht (besloten): per poort alleen `custom_accountable` (1 tekenaar), geen volledige matrix in-app. Zie A.5. [GEPLAND, fase-2]
+- `depends_on` automatisch uitrollen vanuit het skelet (het skelet heeft nog geen dependency-metadata; de afdwinging via `enforce_dependencies` staat wel).
 
 
 ---
@@ -656,8 +729,13 @@ Een Requirement legt vast wat er moet gebeuren, los van hoe het uitgevoerd wordt
 - Een identificatiecode (zoals `F-01` of `NFR-01`)
 - Een type (Functioneel of Niet-functioneel)
 - Een prioriteit volgens MoSCoW (Must, Should, Could, Won't)
+- Een herkomst via `source` (Link -> Requirement Source); `source_type` wordt automatisch overgenomen uit de bron
 - Een acceptatiecriterium: de definitie van wanneer de eis klaar is
-- Een status: `Draft`, `Agreed`, `Built`, `Tested` of `Accepted`
+- Een status: `Draft`, `Agreed`, `Built`, `Tested` of `Accepted`. De eerste vier leidt Span automatisch af uit de Requirement Link-dekking; `Accepted` teken je handmatig af.
+
+**De bron (Requirement Source):**
+
+Elke herkomst van een eis is een eigen record met een `type` (Problem, Process, System, Data, Role, Risk, Wish, Technical). Een knelpunt uit het Analyserapport is een Requirement Source met `type = Problem` (autoname `K-01`). Koppel de eis aan de bron via het `source`-veld, zodat de keten terugloopt tot de oorzaak.
 
 **De koppeling (Requirement Link):**
 
@@ -692,7 +770,7 @@ Na Fase 1 kiest de klant een pakket: Basis, Plus of Premium. Die keuze bepaalt w
 | Premium | Must, Should en Could |
 | Future | Bewust buiten scope geparkeerd |
 
-Het veld `custom_tier` op het Project registreert de gekozen tier. De velden `custom_package` op Epics en Stories registreren op welk niveau elk werkitem valt. Stories die boven de gekozen tier vallen, worden door Span automatisch naar `Canceled` op het board gezet. De packagewaarde blijft bewaard, zodat bij een tier-upgrade de Stories eenvoudig teruggezet kunnen worden.
+Het veld `custom_tier` op het Project registreert de gekozen tier. De velden `custom_package` op Epics en Stories registreren op welk niveau elk werkitem valt. Zodra je `custom_tier` zet, annuleert Span (`cancel_work_above_tier`) automatisch alle werk-items boven de gekozen tier (rang Basis<Plus<Premium<Future). De annulering loopt via een echte save, zodat elke flip als **Version** wordt vastgelegd (scope-audittrail). De packagewaarde blijft bewaard, zodat bij een tier-upgrade de Stories eenvoudig teruggezet kunnen worden.
 
 ---
 
@@ -702,10 +780,10 @@ Na elke fase zit een harde poort. Een poort betekent: Fase N moet volledig afger
 
 **De Beslispoort (tussen Fase 1 en Fase 2):**
 
-Dit is de belangrijkste poort. Na Doorgronden beslist de klant of het project doorgaat en op welk pakketniveau. Bij een Go-beslissing:
+Dit is de belangrijkste poort. Na Doorgronden beslist de klant of het project doorgaat en op welk pakketniveau. Het besluit staat in `Project.custom_decision` (`Pending` / `Go` / `No-Go`). Span dwingt de poort af via `enforce_phase_gate`: de Doorgronden-fase mag pas op board_state `Done` als (a) al haar onderliggende taken klaar zijn én (b) `custom_decision == "Go"`. Er is bewust geen aparte mijlpaaltaak; de Doorgronden-poort uit het skelet ís het Beslismoment. Bij een Go-beslissing:
 
-1. De klant kiest Basis, Plus of Premium.
-2. Span zet Stories boven de gekozen tier naar `Canceled`.
+1. De klant kiest Basis, Plus of Premium (`Project.custom_tier`).
+2. Span annuleert het werk boven de gekozen tier (tier-cancel, zie C1.6).
 3. Fase 2 (Realiseren) wordt vrijgegeven.
 
 **Wie tekent af:**
@@ -727,20 +805,25 @@ Span werkt uitsluitend via custom fields op bestaande ERPNext-doctypes en via tw
 | `custom_work_type` | Select | Phase, Step, Epic, Story, Bug, Task |
 | `custom_board_state` | Select | Backlog, Todo, In Progress, In Review, Done, Canceled |
 | `custom_package` | Select | Basis, Plus, Premium, Future |
+| `custom_meerwerk_status` | Select | (leeg), To Review, Approved, Future Project (read_only; door `flag_meerwerk` gezet) |
 | `custom_phase` | Link (Task) | Automatisch gevuld: dichtstbijzijnde Phase-voorouder |
 | `custom_epic` | Link (Task) | Automatisch gevuld: dichtstbijzijnde Epic-voorouder |
 | `custom_discipline` | Select (multi) | Frontend, Backend, UI/UX, DevOps |
 
-**Custom field op Project:**
+Native `depends_on` op Task wordt door `enforce_dependencies` afgedwongen: een taak mag pas uit Backlog als al haar `depends_on`-taken Done of Canceled zijn.
+
+**Custom fields op Project:**
 
 | Veld | Type | Waarden |
 |---|---|---|
 | `custom_tier` | Select | Basis, Plus, Premium |
+| `custom_decision` | Select | Pending, Go, No-Go (default Pending; poort-besluit Doorgronden) |
 
 **Nieuwe doctypes:**
 
-- `Requirement`: de eis-catalogus (8 velden, zie C1.5).
+- `Requirement`: de eis-catalogus (zie C1.5).
 - `Requirement Link`: de koppeling tussen werk en eis (requirement, work_item, relation_type, note).
+- `Requirement Source`: de herkomst van een eis (type Problem/Process/System/Data/Role/Risk/Wish/Technical). Vervangt het verwijderde `Pain Point`.
 
 ---
 
@@ -889,10 +972,11 @@ NOOIT: `custom_package` na de tier-keuze op bestaande records overschrijven. Het
 
 ## Roadmap / bouwlijst (samenvatting)
 
-**Nieuwe doctypes:** Requirement, Requirement Link, Pain Point (NL-weergave: Knelpunt).
-**Uitbreiden bestaand:** Task.custom_package (Basis/Plus/Premium/Future), Project.custom_tier.
-**Server-logica (app-Python via hooks):** structuur-generator (hybride: native Project Template + Span-hook), tier-cancel, eis-status-roll, per-fase harde poorten, dekkings-rapport.
-**Nog open (klein):** eis-naming (F-01/NFR-01 per project vs alternatieven).
+**Doctypes [GEBOUWD]:** Requirement, Requirement Link, Requirement Source (vervangt Pain Point).
+**Uitbreiden bestaand [GEBOUWD]:** Task.custom_package, Task.custom_meerwerk_status, Project.custom_tier, Project.custom_decision.
+**Server-logica (app-Python via hooks) [GEBOUWD]:** structuur-generator (`rollout_span_structure` + Project-knop), tier-cancel (Version-gelogd), eis-status-roll, `enforce_dependencies`, `enforce_phase_gate` (+ custom_decision), `flag_meerwerk`.
+**Rapportage [GEBOUWD]:** Span Coverage dekkingsrapport.
+**Nog open (klein):** `depends_on` automatisch uitrollen vanuit het skelet (dependency-metadata ontbreekt nog; de afdwinging staat).
 
 ## Onderhoud van dit handboek
 
