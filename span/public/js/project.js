@@ -30,5 +30,18 @@ frappe.ui.form.on("Project", {
 			},
 			__("Span")
 		);
+		frm.add_custom_button(
+			__("Scope Document"),
+			() => {
+				const url =
+					"/printview?doctype=Project&name=" +
+					encodeURIComponent(frm.doc.name) +
+					"&format=" +
+					encodeURIComponent("Span Scope Document") +
+					"&trigger_print=1";
+				window.open(url, "_blank");
+			},
+			__("Span")
+		);
 	},
 });

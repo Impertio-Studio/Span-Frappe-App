@@ -477,3 +477,64 @@ def cancel_work_above_tier(project, tier):
 			_("{0} taak(en) buiten de tier {1} zijn geannuleerd.").format(cancelled, tier)
 		)
 	return cancelled
+
+
+# ---------------------------------------------------------------------------
+# Scope-document (fase 2)
+# Levert de scope-data van een Project zodat het scope-document (Print Format
+# "Span Scope Document") zichzelf vult uit de eisen-laag: bronnen, eisen per
+# MoSCoW, dekking en het Go/No-Go-besluit. Geregistreerd als Jinja-method
+# (zie hooks.py) zodat de zware queries in Python blijven, niet in de template.
+# ---------------------------------------------------------------------------
+
+MOSCOW_ORDER = ["Must", "Should", "Could", "Won't"]
+
+
+def get_scope_data(project):
+	"""Aggregeer de scope van een Project voor het scope-document.
+
+	Geeft het project, de Requirement Sources (bronnen), de eisen gegroepeerd
+	per MoSCoW, en de dekking (eisen zonder implements-link = scope-gaten).
+	"""
+	proj = frappe.db.get_value(
+		"Project",
+		project,
+		["name", "project_name", "custom_tier", "custom_decision"],
+		as_dict=True,
+	)
+	sources = frappe.get_all(
+		"Requirement Source",
+		filters={"project": project},
+		fields=["source_id", "type", "title", "priority", "frequency", "description", "impact"],
+		order_by="source_id asc",
+	)
+	reqs = frappe.get_all(
+		"Requirement",
+		filters={"project": project},
+		fields=["name", "requirement_id", "title", "type", "priority", "status", "source"],
+		order_by="requirement_id asc",
+	)
+
+	by_moscow = {k: [] for k in MOSCOW_ORDER}
+	for r in reqs:
+		by_moscow.setdefault(r.priority or "Must", []).append(r)
+
+	req_names = [r.name for r in reqs]
+	implemented = set()
+	if req_names:
+		for link in frappe.get_all(
+			"Requirement Link",
+			filters={"requirement": ["in", req_names], "relation_type": "implements"},
+			fields=["requirement"],
+		):
+			implemented.add(link.requirement)
+	gaps = [r for r in reqs if r.name not in implemented]
+
+	return {
+		"project": proj,
+		"sources": sources,
+		"moscow": [(k, by_moscow.get(k, [])) for k in MOSCOW_ORDER],
+		"total": len(reqs),
+		"gaps": gaps,
+		"gap_count": len(gaps),
+	}
