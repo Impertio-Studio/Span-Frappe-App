@@ -1,0 +1,17 @@
+{
+ "doctype": "Print Format",
+ "name": "Span Scope Document",
+ "doc_type": "Project",
+ "module": "PM",
+ "standard": "Yes",
+ "custom_format": 1,
+ "print_format_type": "Jinja",
+ "raw_printing": 0,
+ "disabled": 0,
+ "font_size": 0,
+ "margin_top": 15.0,
+ "margin_bottom": 15.0,
+ "margin_left": 15.0,
+ "margin_right": 15.0,
+ "html": "<style>\n.scope-doc h2 { margin: 0 0 2mm; font-size: 16pt; }\n.scope-doc h3 { margin: 5mm 0 1.5mm; font-size: 12pt; border-bottom: 1px solid #ddd; padding-bottom: 1mm; }\n.scope-doc h4 { margin: 3mm 0 1mm; font-size: 10.5pt; }\n.scope-doc .meta { color: #555; font-size: 9pt; margin: 0 0 3mm; }\n.scope-doc table { width: 100%; font-size: 8.5pt; }\n.scope-doc table th { background: #f5f5f5; }\n.scope-doc tr { page-break-inside: avoid; }\n.scope-doc .decision-block { margin-top: 5mm; padding: 3mm; border: 1px solid #ccc; background: #fafafa; }\n.scope-doc .gaps { color: #b00; }\n</style>\n<div class=\"scope-doc\">\n{%- set s = get_scope_data(doc.name) -%}\n<h2>{{ _(\"Scope Document\") }}: {{ doc.project_name or doc.name }}</h2>\n<p class=\"meta\">\n  {{ _(\"Tier\") }}: <b>{{ s.project.custom_tier or _(\"Not set\") }}</b> &middot;\n  {{ _(\"Decision\") }}: <b>{{ s.project.custom_decision or \"Pending\" }}</b> &middot;\n  {{ _(\"Printed\") }}: {{ frappe.utils.nowdate() }}\n</p>\n\n<h3>{{ _(\"Requirement Sources\") }}</h3>\n{%- if s.sources %}\n<table class=\"table table-bordered\">\n  <thead><tr>\n    <th style=\"width:12%\">{{ _(\"Code\") }}</th><th style=\"width:14%\">{{ _(\"Type\") }}</th>\n    <th style=\"width:30%\">{{ _(\"Title\") }}</th><th>{{ _(\"Description\") }}</th>\n  </tr></thead>\n  <tbody>\n  {%- for src in s.sources %}\n    <tr><td>{{ src.source_id }}</td><td>{{ _(src.type) }}</td><td>{{ src.title }}</td><td>{{ src.description or \"\" }}</td></tr>\n  {%- endfor %}\n  </tbody>\n</table>\n{%- else %}\n<p><i>{{ _(\"No requirement sources recorded yet.\") }}</i></p>\n{%- endif %}\n\n<h3>{{ _(\"Requirements\") }} (MoSCoW)</h3>\n{%- for label, rows in s.moscow %}\n  {%- if rows %}\n  <h4>{{ _(label) }} ({{ rows | len }})</h4>\n  <table class=\"table table-bordered\">\n    <thead><tr>\n      <th style=\"width:12%\">{{ _(\"ID\") }}</th><th style=\"width:34%\">{{ _(\"Title\") }}</th>\n      <th style=\"width:16%\">{{ _(\"Type\") }}</th><th style=\"width:16%\">{{ _(\"Status\") }}</th>\n      <th>{{ _(\"Source\") }}</th>\n    </tr></thead>\n    <tbody>\n    {%- for r in rows %}\n      <tr><td>{{ r.requirement_id }}</td><td>{{ r.title }}</td><td>{{ _(r.type) }}</td><td>{{ _(r.status) }}</td><td>{{ r.source or \"\" }}</td></tr>\n    {%- endfor %}\n    </tbody>\n  </table>\n  {%- endif %}\n{%- endfor %}\n\n<h3>{{ _(\"Coverage\") }}</h3>\n<p>{{ _(\"Requirements\") }}: <b>{{ s.total }}</b> &middot;\n   <span class=\"{{ 'gaps' if s.gap_count else '' }}\">{{ _(\"Scope gaps (no story)\") }}: <b>{{ s.gap_count }}</b></span></p>\n{%- if s.gaps %}\n<ul>\n  {%- for g in s.gaps %}\n  <li class=\"gaps\">{{ g.requirement_id }}: {{ g.title }}</li>\n  {%- endfor %}\n</ul>\n{%- endif %}\n\n<div class=\"decision-block\">\n  <h3 style=\"border:0;margin:0 0 1mm\">{{ _(\"Go / No-Go\") }}</h3>\n  <p style=\"margin:0\">{{ _(\"Decision at the milestone after Doorgronden\") }}: <b>{{ s.project.custom_decision or \"Pending\" }}</b></p>\n</div>\n</div>\n"
+}

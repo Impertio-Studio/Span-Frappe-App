@@ -54,6 +54,11 @@ doctype_js = {
 # Fase 3 breidt task_validate uit met board-state -> status sync.
 # Fase 6 voegt on_update toe (span.api.check_phase_completion).
 # ---------------------------------------------------------------------------
+# Jinja-context: get_scope_data voor het scope-document (Print Format).
+jinja = {
+	"methods": ["span.api.get_scope_data"],
+}
+
 doc_events = {
 	"Task": {
 		"validate": "span.api.task_validate",
